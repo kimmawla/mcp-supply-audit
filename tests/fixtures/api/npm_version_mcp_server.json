@@ -1,0 +1,80 @@
+{
+  "bin": {
+    "zqvex-npm-mcp": "index.mjs"
+  },
+  "bugs": {
+    "url": "https://zqvex-npm.example/contact"
+  },
+  "dist": {
+    "shasum": "0000000000000000000000000000000000000001",
+    "tarball": "https://registry.npmjs.org/zqvex-npm-mcp/-/zqvex-npm-mcp-1.0.1.tgz",
+    "fileCount": 3,
+    "integrity": "sha512-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+    "signatures": [
+      {
+        "sig": "MEUCIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "keyid": "SHA256:zqvexAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+    ],
+    "unpackedSize": 12666
+  },
+  "main": "index.mjs",
+  "name": "zqvex-npm-mcp",
+  "type": "module",
+  "author": {
+    "name": "Zqvex"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "gitHead": "0000000000000000000000000000000000000002",
+  "license": "GPL-2.0-or-later",
+  "mcpName": "ai.zqvex-npm/zqvex-npm-mcp",
+  "_npmUser": {
+    "name": "zqvex-npm",
+    "email": "zqvex-user-29@example.invalid"
+  },
+  "homepage": "https://zqvex-npm.example/developers/",
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "mcp-server",
+    "model-context-protocol",
+    "zqvex-keyword-01",
+    "zqvex-keyword-02",
+    "zqvex-keyword-03",
+    "zqvex-keyword-04",
+    "zqvex-keyword-05",
+    "zqvex-keyword-06",
+    "zqvex-keyword-07",
+    "zqvex-keyword-08",
+    "zqvex-keyword-09",
+    "zqvex-keyword-10",
+    "zqvex-keyword-11",
+    "zqvex-keyword-12",
+    "zqvex-keyword-13",
+    "zqvex-keyword-14",
+    "ai-tools"
+  ],
+  "_npmVersion": "10.9.7",
+  "description": "Tells your AI agent which vulnerabilities to fix first, using OSV.dev, FIRST EPSS, and CISA KEV.",
+  "directories": {},
+  "maintainers": [
+    {
+      "name": "zqvex-npm",
+      "email": "zqvex-user-29@example.invalid"
+    }
+  ],
+  "_nodeVersion": "22.22.2",
+  "dependencies": {
+    "zod": "^3.23.8",
+    "@modelcontextprotocol/sdk": "^1.12.0"
+  },
+  "_hasShrinkwrap": false,
+  "_npmOperationalInternal": {
+    "tmp": "tmp/zqvex-npm-mcp_1.0.1_1700000000000_0.1",
+    "host": "s3://npm-registry-packages-npm-production"
+  },
+  "_id": "zqvex-npm-mcp@1.0.1",
+  "version": "1.0.1"
+}

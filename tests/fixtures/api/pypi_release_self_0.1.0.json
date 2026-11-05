@@ -1,0 +1,106 @@
+{
+  "info": {
+    "author": null,
+    "author_email": null,
+    "bugtrack_url": null,
+    "classifiers": [],
+    "description": "# vuln-triage-mcp\n\n<!-- mcp-name: io.github.kimmawla/vuln-triage-mcp -->\n\n> Tells your AI agent which vulnerabilities to fix first, using OSV.dev, FIRST EPSS, and CISA KEV.\n\n[badges: PyPI version, Python versions, license, tests]\n\n## Why this exists\nTwo or three sentences. CVSS alone ranks by severity, not by likelihood of exploitation.\nThis server adds exploit probability (EPSS) and known exploitation (KEV), and shows its reasoning.\nExample: a CVSS 9.8 nobody exploits ranks below a CVSS 8.8 that is being exploited in the wild.\n\n## Quick start\n### Claude Code\n`claude mcp add vuln-triage -- uvx vuln-triage-mcp`\n### Claude Desktop / other clients\nJSON config snippet using `uvx`.\nRequires: Python 3.12+, no API keys.\n\n## Try it\nThree example prompts and what to expect:\n- \"Which is most urgent: CVE-2021-44228, CVE-2023-4863, CVE-2019-10744?\"\n- \"Is lodash 4.17.15 vulnerable? What should I upgrade to?\"\n- \"Is CVE-XXXX actively exploited?\"\n\n## Tools\n| Tool | Args | Use it when | Prefer another when |\n|---|---|---|---|\n| lookup_vulnerability | vuln_id | raw advisory details for one CVE/GHSA | user wants prioritization -> triage_vulnerability |\n| find_vulns_for_package | name, ecosystem, version=\"\" | \"what vulns affect package X (version Y)\" | user already has an ID |\n| get_epss_score | cve_id | exploit-probability only | user wants overall priority -> triage_vulnerability |\n| check_known_exploited | cve_id | \"is this exploited in the wild\" (CISA KEV) | same |\n| triage_vulnerability | vuln_id | any \"how urgent / what should I fix first\" question | raw details only -> lookup_vulnerability |\n\n## How scoring works\n- Formula: CVSS (base) x 40 + EPSS x 35 + KEV +25; KEV-listed floors at 80\n- Buckets: see the table below\n- Missing data: component omitted, named in `reasoning`, lowers `confidence`\n- Link to docs/scoring-spec.md\n\n| Bucket | When |\n|---|---|\n| critical | score >= 80, or listed in CISA KEV (always floored to 80, whatever the confidence) |\n| high | score 60-79 |\n| medium | score 40-59 |\n| low | score < 40 |\n| unknown | not KEV-listed, and either no CVSS severity or low confidence (0-1 of 3 signals). Too little data to classify; the score is still returned, and `reasoning` names what is missing. **Not a low-risk verdict.** |\n\n`unknown` takes precedence over high, medium, and low; it never applies to a KEV-listed vulnerability.\n\n## Reliability and limits\n- Partial results: if EPSS or KEV fails, the result names the missing source\n- Truncation: `truncated`, `found_count` vs `returned_count`, `ranking_note`\n- Stale KEV cache: `stale` and `catalog_fetched_at`\n- Timeouts and retry policy (one line)\n- Package queries return at most 50 advisories, sorted by severity\n\n## Security\n- Advisory text is untrusted third-party content (prompt injection vector):\n  sanitized, length-capped, returned under `untrusted_text`, and flagged to the model in the server instructions\n- Input validation on all IDs and ecosystems\n- No credentials required or stored; read-only calls to three public APIs\n- Reporting vulnerabilities in this project: SECURITY.md or email\n\n## Evaluation\nGolden set: 17 entries (16 CVEs, 1 GHSA) with expected buckets, confidence, and ordering, recorded 10/21/2026.\nResult: 17/17 match on the recorded fixtures (`uv run pytest tests/test_golden.py`), and 17/17 against the live APIs on 10/21/2026 (`uv run pytest -m live tests/test_golden.py`). EPSS drifts daily, so the live run can diverge over time; re-record the fixtures with `uv run python scripts/record_golden_fixtures.py` when the golden set or scoring spec changes.\n\n## Data sources and attribution\nOSV.dev, FIRST EPSS (cite per their usage terms), CISA KEV. Not affiliated with any of them.\n\n## Development\n`uv sync`, `uv run pytest`, running the Inspector, live-test marker.\n\n## License\nMIT\n",
+    "description_content_type": "text/markdown",
+    "docs_url": null,
+    "download_url": null,
+    "downloads": {
+      "last_day": -1,
+      "last_month": -1,
+      "last_week": -1
+    },
+    "dynamic": null,
+    "home_page": null,
+    "keywords": null,
+    "license": null,
+    "license_expression": "MIT",
+    "license_files": [
+      "LICENSE"
+    ],
+    "maintainer": null,
+    "maintainer_email": null,
+    "name": "vuln-triage-mcp",
+    "package_url": "https://pypi.org/project/vuln-triage-mcp/",
+    "platform": null,
+    "project_url": "https://pypi.org/project/vuln-triage-mcp/",
+    "project_urls": {
+      "Issues": "https://github.com/kimmawla/vuln-triage-mcp/issues",
+      "Repository": "https://github.com/kimmawla/vuln-triage-mcp"
+    },
+    "provides_extra": null,
+    "release_url": "https://pypi.org/project/vuln-triage-mcp/0.1.0/",
+    "requires_dist": [
+      "cvss<3.7,>=3.6",
+      "fastmcp>=4.1.2",
+      "httpx>=0.28.1"
+    ],
+    "requires_python": ">=3.12",
+    "summary": "Add your description here",
+    "version": "0.1.0",
+    "yanked": false,
+    "yanked_reason": null
+  },
+  "last_serial": 42563118,
+  "ownership": {
+    "organization": null,
+    "roles": [
+      {
+        "role": "Owner",
+        "user": "kimmawla"
+      }
+    ]
+  },
+  "urls": [
+    {
+      "comment_text": null,
+      "core-metadata": {
+        "sha256": "f6c6683bf0a855eac8c916c542dcfa200da8f13cbfa27b6ecc1ec4ce95373eca"
+      },
+      "digests": {
+        "blake2b_256": "4e94d4b4faa5bc3a202ef8c3fc30ca8de7600506af1c7ec34cfceb4b4315b987",
+        "md5": "d93ef0ce6dfd33ad3e9689fb893248ea",
+        "sha256": "3482ac2249c34ea43559c1207d84daf0bb95e33f3727432898bb2d65bb38e5f2"
+      },
+      "downloads": -1,
+      "filename": "vuln_triage_mcp-0.1.0-py3-none-any.whl",
+      "has_sig": false,
+      "md5_digest": "d93ef0ce6dfd33ad3e9689fb893248ea",
+      "packagetype": "bdist_wheel",
+      "python_version": "py3",
+      "requires_python": ">=3.12",
+      "size": 28383,
+      "upload_time": "2026-10-21T21:31:59",
+      "upload_time_iso_8601": "2026-10-21T21:31:59.714542Z",
+      "url": "https://files.pythonhosted.org/packages/4e/94/d4b4faa5bc3a202ef8c3fc30ca8de7600506af1c7ec34cfceb4b4315b987/vuln_triage_mcp-0.1.0-py3-none-any.whl",
+      "yanked": false,
+      "yanked_reason": null
+    },
+    {
+      "comment_text": null,
+      "core-metadata": false,
+      "digests": {
+        "blake2b_256": "e7a6086913a9ed296ff4a9afbe648a3d048c1cdd7dab03a25b0cff3e25e756a7",
+        "md5": "43bfb39a69f63d2c4093ae35f1966e21",
+        "sha256": "a6f2688d85ff00695085b0632372f9aec2553fcabb311a6896f8f89e295e4c19"
+      },
+      "downloads": -1,
+      "filename": "vuln_triage_mcp-0.1.0.tar.gz",
+      "has_sig": false,
+      "md5_digest": "43bfb39a69f63d2c4093ae35f1966e21",
+      "packagetype": "sdist",
+      "python_version": "source",
+      "requires_python": ">=3.12",
+      "size": 23243,
+      "upload_time": "2026-10-21T21:32:00",
+      "upload_time_iso_8601": "2026-10-21T21:32:00.690744Z",
+      "url": "https://files.pythonhosted.org/packages/e7/a6/086913a9ed296ff4a9afbe648a3d048c1cdd7dab03a25b0cff3e25e756a7/vuln_triage_mcp-0.1.0.tar.gz",
+      "yanked": false,
+      "yanked_reason": null
+    }
+  ],
+  "vulnerabilities": []
+}

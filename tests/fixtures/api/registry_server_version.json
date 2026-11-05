@@ -1,0 +1,31 @@
+{
+  "server": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.kimmawla/vuln-triage-mcp",
+    "description": "Tells your AI agent which vulnerabilities to fix first, using OSV.dev, FIRST EPSS, and CISA KEV.",
+    "repository": {
+      "url": "https://github.com/kimmawla/vuln-triage-mcp",
+      "source": "github"
+    },
+    "version": "0.1.0",
+    "packages": [
+      {
+        "registryType": "pypi",
+        "identifier": "vuln-triage-mcp",
+        "version": "0.1.0",
+        "transport": {
+          "type": "stdio"
+        }
+      }
+    ]
+  },
+  "_meta": {
+    "io.modelcontextprotocol.registry/official": {
+      "status": "active",
+      "statusChangedAt": "2026-10-21T21:32:10.064246Z",
+      "publishedAt": "2026-10-21T21:32:10.064246Z",
+      "updatedAt": "2026-10-21T21:32:10.064246Z",
+      "isLatest": true
+    }
+  }
+}

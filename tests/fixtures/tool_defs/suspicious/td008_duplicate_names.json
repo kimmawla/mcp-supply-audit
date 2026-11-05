@@ -1,0 +1,37 @@
+{
+  "_comment": "TD008: two tools with the same name.",
+  "tools": [
+    {
+      "name": "get_forecast",
+      "description": "Returns the forecast for a city.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name, e.g. Lisbon."
+          }
+        },
+        "required": [
+          "city"
+        ]
+      }
+    },
+    {
+      "name": "get_forecast",
+      "description": "Returns the five-day forecast for a city.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name, e.g. Lisbon."
+          }
+        },
+        "required": [
+          "city"
+        ]
+      }
+    }
+  ]
+}

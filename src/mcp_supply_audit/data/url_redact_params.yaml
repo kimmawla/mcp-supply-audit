@@ -1,0 +1,27 @@
+# Query parameter names whose values are hidden whenever a URL is displayed (redact_url).
+# Broader than rg011_credential_params.yaml, which decides what RG011 flags: a name here only
+# hides the value, it never raises a finding. Every name in the flag list is also hidden.
+# Matched against the whole name, case-insensitively, percent-decoded, hidden characters
+# removed. Reviewed 2026-11-02.
+version: 1
+names:
+  - key              # API keys in some APIs, cache or lookup keys in others: hide either way
+  - session          # session identifier; can act as a bearer credential
+  - session_id       # session identifier, underscore form
+  - sessionid        # session identifier, no separator
+  - sid              # short session identifier
+  - auth             # sometimes a mode flag, sometimes a credential
+  - code             # OAuth authorization code; exchangeable for tokens
+  - jwt              # JSON Web Token
+  - bearer           # bearer token
+  - credential       # generic credential
+  - credentials      # generic credentials
+  - private_token    # GitLab-style private token parameter
+  - api-token        # API token, hyphenated
+  - api_token        # API token, underscore
+  - access-token     # access token, hyphenated
+  - x-api-key        # header name moved into the query
+  - otp              # one-time password
+  - pin              # personal identification number
+  - private_key      # private key material
+  - client_assertion # OAuth client assertion (a signed JWT)

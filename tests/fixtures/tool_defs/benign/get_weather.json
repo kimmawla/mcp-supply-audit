@@ -1,0 +1,56 @@
+{
+  "_comment": "Benign: hand-written weather tool with enum, default and nested items.",
+  "tools": [
+    {
+      "name": "get_weather",
+      "title": "Get weather",
+      "description": "Current conditions and an optional multi-day forecast for one city.\n\nUse when: the user asks about weather for a named place.\nPrefer another tool when: the user wants historical climate data.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name, e.g. Lisbon or Osaka."
+          },
+          "units": {
+            "type": "string",
+            "enum": [
+              "metric",
+              "imperial"
+            ],
+            "default": "metric",
+            "description": "Unit system for temperatures and wind speed."
+          },
+          "days": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 7,
+            "default": 0,
+            "description": "Forecast days to include; 0 for current conditions only."
+          },
+          "fields": {
+            "type": "array",
+            "title": "Fields",
+            "items": {
+              "type": "string",
+              "enum": [
+                "temperature",
+                "humidity",
+                "wind",
+                "uv_index"
+              ]
+            },
+            "description": "Which measurements to return; all when omitted."
+          }
+        },
+        "required": [
+          "city"
+        ]
+      },
+      "annotations": {
+        "title": "Get weather",
+        "readOnlyHint": true
+      }
+    }
+  ]
+}

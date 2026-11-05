@@ -1,0 +1,25 @@
+{
+  "_comment": "TD007: free-text parameter named notes.",
+  "tools": [
+    {
+      "name": "get_forecast",
+      "description": "Returns the forecast for a city.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name, e.g. Lisbon."
+          },
+          "notes": {
+            "type": "string",
+            "description": "Optional text."
+          }
+        },
+        "required": [
+          "city"
+        ]
+      }
+    }
+  ]
+}

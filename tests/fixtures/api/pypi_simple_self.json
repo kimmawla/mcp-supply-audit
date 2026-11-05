@@ -1,0 +1,47 @@
+{
+  "files": [
+    {
+      "core-metadata": {
+        "sha256": "f6c6683bf0a855eac8c916c542dcfa200da8f13cbfa27b6ecc1ec4ce95373eca"
+      },
+      "data-dist-info-metadata": {
+        "sha256": "f6c6683bf0a855eac8c916c542dcfa200da8f13cbfa27b6ecc1ec4ce95373eca"
+      },
+      "filename": "vuln_triage_mcp-0.1.0-py3-none-any.whl",
+      "hashes": {
+        "sha256": "3482ac2249c34ea43559c1207d84daf0bb95e33f3727432898bb2d65bb38e5f2"
+      },
+      "provenance": null,
+      "requires-python": ">=3.12",
+      "size": 28383,
+      "upload-time": "2026-10-21T21:31:59.714542Z",
+      "url": "https://files.pythonhosted.org/packages/4e/94/d4b4faa5bc3a202ef8c3fc30ca8de7600506af1c7ec34cfceb4b4315b987/vuln_triage_mcp-0.1.0-py3-none-any.whl",
+      "yanked": false
+    },
+    {
+      "core-metadata": false,
+      "data-dist-info-metadata": false,
+      "filename": "vuln_triage_mcp-0.1.0.tar.gz",
+      "hashes": {
+        "sha256": "a6f2688d85ff00695085b0632372f9aec2553fcabb311a6896f8f89e295e4c19"
+      },
+      "provenance": null,
+      "requires-python": ">=3.12",
+      "size": 23243,
+      "upload-time": "2026-10-21T21:32:00.690744Z",
+      "url": "https://files.pythonhosted.org/packages/e7/a6/086913a9ed296ff4a9afbe648a3d048c1cdd7dab03a25b0cff3e25e756a7/vuln_triage_mcp-0.1.0.tar.gz",
+      "yanked": false
+    }
+  ],
+  "meta": {
+    "_last-serial": 42563118,
+    "api-version": "1.4"
+  },
+  "name": "vuln-triage-mcp",
+  "project-status": {
+    "status": "active"
+  },
+  "versions": [
+    "0.1.0"
+  ]
+}

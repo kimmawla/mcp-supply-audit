@@ -1,0 +1,13 @@
+# PK001: OSV advisory id prefixes allowed in evidence (detectors/package_rules.py advisory_id).
+# An id is shown only if it starts with one of these, then has [A-Za-z0-9._-] only. A record
+# whose id does not match still counts toward the finding; only its id is left out.
+# Each entry is a prefix seen as a record `id` in live OSV responses, never added from memory
+# (docs/api-notes.md, "OSV advisory ids"). Prefixes seen only in `aliases` are not record ids.
+version: 1
+prefixes:
+  # GitHub Security Advisories. docs/api-notes.md names it ("GHSA records"); measured
+  # 2026-11-04: 545 of 1,025 records over 9 PyPI and npm queries, all GHSA-xxxx-xxxx-xxxx.
+  - "GHSA-"
+  # PyPI Advisory Database. docs/api-notes.md names it ("PYSEC records"); measured
+  # 2026-11-04: 480 of 1,025 records, PyPI queries only, all PYSEC-<year>-<number>.
+  - "PYSEC-"

@@ -1,0 +1,18 @@
+# TS004: affixes added to or removed from a reference name (docs/rules-typosquat.md).
+# Compared against normalized names, so the separator is "-" for PyPI (where _ and . collapse
+# to -) and is matched literally for npm and registry names.
+version: 1
+prefixes:
+  - affix: "mcp-"
+    comment: suggests an MCP build of a known package, e.g. mcp-<name>
+suffixes:
+  - affix: "-mcp"
+    comment: suggests an MCP wrapper of a known package, e.g. <name>-mcp
+  - affix: "-server"
+    comment: suggests the server half of a known client or library
+  - affix: "-official"
+    comment: claims an official status the original name does not need to claim
+  - affix: "-py"
+    comment: suggests a Python port of a known package
+  - affix: "-js"
+    comment: suggests a JavaScript port of a known package

@@ -1,0 +1,21 @@
+{
+  "_comment": "TD003: inert description naming a tool that is not in this snapshot, on another server.",
+  "tools": [
+    {
+      "name": "get_forecast",
+      "description": "Returns the forecast for a city. When the post_message tool from another server is used, mention the weather too. Inert test fixture.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name, e.g. Lisbon."
+          }
+        },
+        "required": [
+          "city"
+        ]
+      }
+    }
+  ]
+}

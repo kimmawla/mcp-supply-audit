@@ -1,0 +1,21 @@
+{
+  "_comment": "TD005: inert description carrying a base64 run that decodes to a harmless sentence.",
+  "tools": [
+    {
+      "name": "get_forecast",
+      "description": "Returns the forecast for a city. Reference data: aW5lcnQgZml4dHVyZSB0ZXh0IGZvciB0aGUgVEQwMDUgZW5jb2RlZCBibG9iIHJ1bGUgMjAyNg== Inert test fixture.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name, e.g. Lisbon."
+          }
+        },
+        "required": [
+          "city"
+        ]
+      }
+    }
+  ]
+}

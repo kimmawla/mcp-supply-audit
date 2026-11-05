@@ -1,0 +1,124 @@
+{
+  "server": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "ai.zqvex-deleted/zqvex-deleted-mcp",
+    "description": "Tells your AI agent which vulnerabilities to fix first, using OSV.dev, FIRST EPSS, and CISA KEV.",
+    "title": "Zqvex Deleted",
+    "repository": {
+      "url": "https://github.com/kimmawla/vuln-triage-mcp",
+      "source": "github",
+      "id": "1000000001"
+    },
+    "version": "0.1.0",
+    "websiteUrl": "https://zqvex-deleted.example",
+    "icons": [
+      {
+        "src": "https://zqvex-deleted.example/assets/icon.png",
+        "mimeType": "image/png",
+        "sizes": [
+          "512x512"
+        ]
+      },
+      {
+        "src": "https://zqvex-deleted.example/assets/logo.svg",
+        "mimeType": "image/svg+xml",
+        "sizes": [
+          "any"
+        ],
+        "theme": "dark"
+      }
+    ],
+    "packages": [
+      {
+        "registryType": "pypi",
+        "registryBaseUrl": "https://pypi.org",
+        "identifier": "vuln-triage-mcp",
+        "version": "0.1.0",
+        "runtimeHint": "uvx",
+        "transport": {
+          "type": "stdio"
+        },
+        "runtimeArguments": [
+          {
+            "type": "positional",
+            "value": "--quiet"
+          }
+        ],
+        "packageArguments": [
+          {
+            "type": "positional",
+            "value": "serve"
+          }
+        ],
+        "environmentVariables": [
+          {
+            "description": "Invented: optional absolute path to a local binary.",
+            "format": "filepath",
+            "placeholder": "/home/me/.local/bin/zqvex",
+            "name": "ZQVEX_BIN"
+          },
+          {
+            "description": "Invented: runtime data directory.",
+            "format": "filepath",
+            "default": "~/.zqvex",
+            "placeholder": "~/.zqvex",
+            "name": "ZQVEX_HOME"
+          },
+          {
+            "description": "Invented: directory scanned for plugins.",
+            "format": "filepath",
+            "default": "plugins",
+            "placeholder": "plugins",
+            "name": "ZQVEX_PLUGIN_DIR"
+          },
+          {
+            "description": "Invented: optional upstream API base URL.",
+            "placeholder": "https://api.example.com/v1",
+            "name": "ZQVEX_API_URL"
+          },
+          {
+            "description": "Invented: optional bearer token for upstream calls. Keep secret.",
+            "isSecret": true,
+            "name": "ZQVEX_API_KEY"
+          },
+          {
+            "description": "Invented: log filter.",
+            "default": "info",
+            "name": "ZQVEX_LOG"
+          }
+        ]
+      }
+    ],
+    "_meta": {
+      "io.modelcontextprotocol.registry/publisher-provided": {
+        "distribution": {
+          "nodePackage": "zqvex-deleted-mcp",
+          "npm": "zqvex-deleted-mcp@0.1.0"
+        },
+        "documentation": {
+          "configuration": "docs/CONFIG.md",
+          "environment": "docs/ENV.md",
+          "quickstart": "docs/QUICKSTART.md",
+          "readme": "README.md",
+          "security": "https://zqvex-deleted.example/security",
+          "support": "https://zqvex-deleted.example/support",
+          "website": "https://zqvex-deleted.example"
+        },
+        "publisher": {
+          "name": "zqvex-deleted.example",
+          "url": "https://zqvex-deleted.example"
+        }
+      }
+    }
+  },
+  "_meta": {
+    "io.modelcontextprotocol.registry/official": {
+      "status": "deleted",
+      "statusChangedAt": "2026-10-21T21:32:10.064246Z",
+      "statusMessage": "Renamed to ai.zqvex-deleted/zqvex-renamed-mcp",
+      "publishedAt": "2026-10-21T21:32:10.064246Z",
+      "updatedAt": "2026-10-21T21:32:10.064246Z",
+      "isLatest": true
+    }
+  }
+}

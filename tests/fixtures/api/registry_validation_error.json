@@ -1,0 +1,12 @@
+{
+  "title": "Unprocessable Entity",
+  "status": 422,
+  "detail": "validation failed",
+  "errors": [
+    {
+      "message": "expected number <= 100",
+      "location": "query.limit",
+      "value": 101
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+# Hand-curated reference names for check_typosquat (docs/rules-typosquat.md).
+# Read by scripts/build_reference_names.py, which refuses any entry without a source_url.
+# Every entry was checked against its source on checked_at, never written from memory:
+#   reference-server: the server's own manifest in modelcontextprotocol/servers (main), listed
+#     under "Reference Servers" in that repo's README; the name returned 200 from its index.
+#   dependency: a runtime dependency in this repo's pyproject.toml; the name returned 200 from
+#     pypi.org, and is written as PyPI's info.name spells it.
+version: 1
+entries:
+  - name: "@modelcontextprotocol/server-everything"
+    ecosystem: npm
+    source_type: reference-server
+    source_url: https://github.com/modelcontextprotocol/servers/tree/main/src/everything
+    checked_at: "2026-11-02"
+    comment: name field of src/everything/package.json
+  - name: "@modelcontextprotocol/server-filesystem"
+    ecosystem: npm
+    source_type: reference-server
+    source_url: https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem
+    checked_at: "2026-11-02"
+    comment: name field of src/filesystem/package.json; also in the repo README
+  - name: "@modelcontextprotocol/server-memory"
+    ecosystem: npm
+    source_type: reference-server
+    source_url: https://github.com/modelcontextprotocol/servers/tree/main/src/memory
+    checked_at: "2026-11-02"
+    comment: name field of src/memory/package.json; also in the repo README
+  - name: "@modelcontextprotocol/server-sequential-thinking"
+    ecosystem: npm
+    source_type: reference-server
+    source_url: https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking
+    checked_at: "2026-11-02"
+    comment: name field of src/sequentialthinking/package.json (the directory has no hyphen)
+  - name: mcp-server-fetch
+    ecosystem: pypi
+    source_type: reference-server
+    source_url: https://github.com/modelcontextprotocol/servers/tree/main/src/fetch
+    checked_at: "2026-11-02"
+    comment: project.name in src/fetch/pyproject.toml; also in the repo README
+  - name: mcp-server-git
+    ecosystem: pypi
+    source_type: reference-server
+    source_url: https://github.com/modelcontextprotocol/servers/tree/main/src/git
+    checked_at: "2026-11-02"
+    comment: project.name in src/git/pyproject.toml; also in the repo README
+  - name: mcp-server-time
+    ecosystem: pypi
+    source_type: reference-server
+    source_url: https://github.com/modelcontextprotocol/servers/tree/main/src/time
+    checked_at: "2026-11-02"
+    comment: project.name in src/time/pyproject.toml
+  - name: fastmcp
+    ecosystem: pypi
+    source_type: dependency
+    source_url: https://pypi.org/project/fastmcp/
+    checked_at: "2026-11-02"
+    comment: runtime dependency in pyproject.toml
+  - name: httpx
+    ecosystem: pypi
+    source_type: dependency
+    source_url: https://pypi.org/project/httpx/
+    checked_at: "2026-11-02"
+    comment: runtime dependency in pyproject.toml
+  - name: PyYAML
+    ecosystem: pypi
+    source_type: dependency
+    source_url: https://pypi.org/project/PyYAML/
+    checked_at: "2026-11-02"
+    comment: runtime dependency in pyproject.toml (listed as pyyaml); PyPI spells it PyYAML

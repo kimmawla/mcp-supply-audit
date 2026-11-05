@@ -1,0 +1,56 @@
+# CF004: shells and the flags that make them run an inline script, from each shell's own
+# documentation (docs/api-notes.md, "Shells (CF004)"). Commands are matched on the basename,
+# lower-cased, with .exe removed. Flags are matched case-insensitively where the shell's docs
+# say parameters are case-insensitive. Running a script file (sh script.sh, pwsh -File) is not
+# an inline script and is not flagged. Reviewed 2026-11-04.
+version: 1
+shells:
+  - name: sh                    # POSIX sh: "-c  Read commands from the command_string operand"
+    commands: [sh, bash, zsh, dash, ksh, fish]   # treated as POSIX sh for -c (manuals not read)
+    flags: ["-c"]
+    clustered: true             # POSIX single-letter options may be combined, e.g. -ec, -lc
+    case_insensitive: false
+    script_file_flags: []       # the first operand that is not an option ends the options
+  - name: cmd                   # cmd /c runs <string> and exits; /k runs it and stays open
+    commands: [cmd]
+    flags: ["/c", "/k"]
+    clustered: false
+    case_insensitive: true      # cmd switches are case-insensitive (/C works)
+    script_file_flags: []       # cmd has no script-file switch
+  - name: pwsh                  # about_Pwsh: "All parameters are case-insensitive."
+    commands: [pwsh]
+    flags: ["-command", "-c", "-commandwithargs", "-cwa", "-encodedcommand", "-e", "-ec"]
+    clustered: false
+    case_insensitive: true
+    script_file_flags: ["-file", "-f"]   # everything after -File goes to the script
+  - name: powershell            # about_PowerShell_exe (5.1); "-" or "/" from cmd.exe
+    commands: [powershell]
+    flags: ["-command", "/command", "-encodedcommand", "/encodedcommand"]
+    clustered: false
+    case_insensitive: true
+    script_file_flags: ["-file", "/file"]   # everything after -File goes to the script
+# A downloader piped into an interpreter in the inline script is reported separately.
+downloaders:
+  - curl                        # curl URL | sh
+  - wget                        # wget -O- URL | sh
+  - invoke-webrequest           # PowerShell download cmdlet
+  - iwr                         # PowerShell alias of Invoke-WebRequest
+  - invoke-restmethod           # PowerShell download cmdlet
+  - irm                         # PowerShell alias of Invoke-RestMethod
+  - downloadstring              # (New-Object Net.WebClient).DownloadString(URL)
+interpreters:
+  - sh                          # ... | sh
+  - bash                        # ... | bash
+  - zsh                         # ... | zsh
+  - dash                        # ... | dash
+  - ksh                         # ... | ksh
+  - python                      # ... | python
+  - python3                     # ... | python3
+  - node                        # ... | node
+  - iex                         # PowerShell alias of Invoke-Expression
+  - invoke-expression           # runs a string as PowerShell code
+# Server config fields, other than command, that a client runs as a shell command (CF004
+# flags their presence; the value is never read). Only fields whose docs say they run a
+# command are listed (docs/api-notes.md, "Fields that run a command").
+command_fields:
+  - headersHelper               # Claude Code: "runs the command in a shell" on each connection

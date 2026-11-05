@@ -1,0 +1,186 @@
+{
+  "bugs": {
+    "url": "https://github.com/expressjs/express/issues"
+  },
+  "dist": {
+    "shasum": "ab72dace89c50c8417bd3f865dad0b4fd1ca1c73",
+    "tarball": "https://registry.npmjs.org/express/-/express-5.3.0.tgz",
+    "fileCount": 10,
+    "integrity": "sha512-qCqy1xSoaugxOD4IVHb1ZWdkvCF2W3aE2okKouWj8VwJ+ztskSiXoBnCSJqfKT+cVPJhuJqe9YLbY425+Zh00g==",
+    "signatures": [
+      {
+        "sig": "MEQCICHxm5Q3ouMkRSvPzBL4cd1e1inNV4jvmEskclN0pLl5AiAA2D5Tc8x4V1F3mmyvA+cVgJs6yQiGwONT44JG+yX29A==",
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+      }
+    ],
+    "attestations": {
+      "url": "https://registry.npmjs.org/-/npm/v1/attestations/express@5.3.0",
+      "provenance": {
+        "predicateType": "https://slsa.dev/provenance/v1"
+      }
+    },
+    "unpackedSize": 76638
+  },
+  "name": "express",
+  "author": {
+    "name": "zqvex-person-1",
+    "email": "zqvex-user-1@example.invalid"
+  },
+  "engines": {
+    "node": ">= 18"
+  },
+  "funding": {
+    "url": "https://opencollective.com/express",
+    "type": "opencollective"
+  },
+  "gitHead": "cf6722bf89a86905281d9160b6482e08166b5ef0",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "mocha --require test/support/env --reporter spec --check-leaks test/ test/acceptance/",
+    "test-ci": "nyc --exclude examples --exclude test --exclude benchmarks --reporter=lcovonly --reporter=text npm test",
+    "lint:fix": "eslint . --fix",
+    "test-cov": "nyc --exclude examples --exclude test --exclude benchmarks --reporter=html --reporter=text npm test",
+    "test-tap": "mocha --require test/support/env --reporter tap --check-leaks test/ test/acceptance/"
+  },
+  "_npmUser": {
+    "name": "zqvex-ci-publisher",
+    "email": "zqvex-ci-publisher@example.invalid",
+    "approver": {
+      "name": "zqvex-person-2",
+      "email": "zqvex-user-2@example.invalid"
+    },
+    "trustedPublisher": {
+      "id": "zqvex-ci",
+      "oidcConfigId": "oidc:zqvex-oidc-config-1"
+    }
+  },
+  "homepage": "https://expressjs.com/",
+  "keywords": [
+    "express",
+    "framework",
+    "sinatra",
+    "web",
+    "http",
+    "rest",
+    "restful",
+    "router",
+    "app",
+    "api"
+  ],
+  "repository": {
+    "url": "git+https://github.com/expressjs/express.git",
+    "type": "git"
+  },
+  "_npmVersion": "12.2.0",
+  "description": "Fast, unopinionated, minimalist web framework",
+  "directories": {},
+  "maintainers": [
+    {
+      "name": "zqvex-person-3",
+      "email": "zqvex-user-3@example.invalid"
+    },
+    {
+      "name": "zqvex-person-4",
+      "email": "zqvex-user-4@example.invalid"
+    },
+    {
+      "name": "zqvex-person-5",
+      "email": "zqvex-user-5@example.invalid"
+    },
+    {
+      "name": "zqvex-person-2",
+      "email": "zqvex-user-2@example.invalid"
+    },
+    {
+      "name": "zqvex-person-6",
+      "email": "zqvex-user-6@example.invalid"
+    }
+  ],
+  "_nodeVersion": "24.21.0",
+  "contributors": [
+    {
+      "name": "zqvex-person-7",
+      "email": "zqvex-user-7@example.invalid"
+    },
+    {
+      "name": "zqvex-person-8",
+      "email": "zqvex-user-8@example.invalid"
+    },
+    {
+      "name": "zqvex-person-9",
+      "email": "zqvex-user-9@example.invalid"
+    },
+    {
+      "name": "zqvex-person-10",
+      "email": "zqvex-user-10@example.invalid"
+    },
+    {
+      "name": "zqvex-person-11",
+      "email": "zqvex-user-11@example.invalid"
+    },
+    {
+      "name": "zqvex-person-12",
+      "email": "zqvex-user-12@example.invalid"
+    },
+    {
+      "name": "zqvex-person-13",
+      "email": "zqvex-user-13@example.invalid"
+    }
+  ],
+  "dependencies": {
+    "qs": "^6.16.0",
+    "depd": "^2.0.0",
+    "etag": "^1.8.1",
+    "once": "^1.4.0",
+    "send": "^1.1.0",
+    "vary": "^1.1.2",
+    "debug": "^4.4.0",
+    "fresh": "^2.0.0",
+    "cookie": "^0.7.1",
+    "router": "^2.2.0",
+    "accepts": "^2.0.0",
+    "type-is": "^2.1.0",
+    "parseurl": "^1.3.3",
+    "statuses": "^2.0.1",
+    "encodeurl": "^2.0.0",
+    "mime-types": "^3.0.0",
+    "proxy-addr": "^2.0.8",
+    "body-parser": "^2.3.0",
+    "escape-html": "^1.0.3",
+    "http-errors": "^2.0.0",
+    "on-finished": "^2.4.1",
+    "content-type": "^2.0.0",
+    "finalhandler": "^2.1.0",
+    "range-parser": "^1.2.1",
+    "serve-static": "^2.2.0",
+    "cookie-signature": "^1.2.1",
+    "merge-descriptors": "^2.0.0",
+    "content-disposition": "^2.0.1"
+  },
+  "_hasShrinkwrap": false,
+  "devDependencies": {
+    "ejs": "^3.1.10",
+    "hbs": "4.3.1",
+    "nyc": "^17.1.0",
+    "after": "0.8.2",
+    "mocha": "^11.7.5",
+    "vhost": "~3.0.2",
+    "eslint": "8.47.0",
+    "marked": "^15.0.3",
+    "morgan": "1.12.1",
+    "supertest": "^6.3.0",
+    "connect-redis": "^8.0.1",
+    "cookie-parser": "1.4.7",
+    "cookie-session": "2.1.1",
+    "express-session": "^1.18.1",
+    "method-override": "3.0.0",
+    "pbkdf2-password": "1.2.1"
+  },
+  "_npmOperationalInternal": {
+    "tmp": "tmp/express_5.3.0_1791550614422_0.04189865239028845",
+    "host": "s3://npm-registry-packages-npm-production"
+  },
+  "_id": "express@5.3.0",
+  "version": "5.3.0"
+}

@@ -1,0 +1,19 @@
+# TD003: a description reaching outside its own server (tool shadowing).
+# Phrases use the TD002 matching rules. References to tools by name are found by pattern
+# in code ("send_email tool", "tool named x", "server called x"); names of tools in the same
+# snapshot are allowed, since "use triage_vulnerability instead" is normal guidance.
+# "another tool" is deliberately absent: "Prefer another tool when ..." is common and benign.
+version: 1
+phrases:
+  - another server
+  - other server
+  - other servers
+  - another mcp server
+  - other mcp server
+  - other mcp servers
+  - different server
+  - any other tool
+  - all other tools
+  - every other tool
+  - other tools on
+  - tools from other

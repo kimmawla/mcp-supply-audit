@@ -1,0 +1,22 @@
+# TS002: ASCII characters and pairs that render alike in common fonts (docs/rules-typosquat.md).
+# Each mapping replaces `from` with `to` when building a name's skeleton. Mappings apply in
+# order to the name as written, before lowercasing, so an uppercase I is still told apart
+# from a lowercase i. Two names with the same skeleton but different normalized forms fire
+# TS002. Non-ASCII lookalikes never get this far: validation rejects them.
+version: 1
+mappings:
+  - from: "I"
+    to: "l"
+    comment: uppercase I and lowercase l are one vertical stroke in sans-serif fonts
+  - from: "1"
+    to: "l"
+    comment: digit one and lowercase l differ only by a small flag in many fonts
+  - from: "0"
+    to: "o"
+    comment: digit zero and the letter o (either case, after lowercasing) look alike
+  - from: "rn"
+    to: "m"
+    comment: r followed by n reads as m at small sizes or with tight kerning
+  - from: "vv"
+    to: "w"
+    comment: two v characters read as w

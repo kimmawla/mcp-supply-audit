@@ -1,0 +1,199 @@
+{
+  "info": {
+    "author": "zqvex-person-21",
+    "author_email": "zqvex-user-21@example.invalid",
+    "bugtrack_url": null,
+    "classifiers": [
+      "Development Status :: 5 - Production/Stable",
+      "Environment :: Web Environment",
+      "Intended Audience :: Developers",
+      "License :: OSI Approved :: Apache Software License",
+      "Natural Language :: English",
+      "Operating System :: OS Independent",
+      "Programming Language :: Python",
+      "Programming Language :: Python :: 3",
+      "Programming Language :: Python :: 3 :: Only",
+      "Programming Language :: Python :: 3.10",
+      "Programming Language :: Python :: 3.11",
+      "Programming Language :: Python :: 3.12",
+      "Programming Language :: Python :: 3.8",
+      "Programming Language :: Python :: 3.9",
+      "Programming Language :: Python :: Implementation :: CPython",
+      "Programming Language :: Python :: Implementation :: PyPy",
+      "Topic :: Internet :: WWW/HTTP",
+      "Topic :: Software Development :: Libraries"
+    ],
+    "description_content_type": "text/markdown",
+    "docs_url": null,
+    "download_url": null,
+    "downloads": {
+      "last_day": -1,
+      "last_month": -1,
+      "last_week": -1
+    },
+    "dynamic": null,
+    "home_page": "https://requests.readthedocs.io",
+    "keywords": null,
+    "license": "Apache-2.0",
+    "license_expression": null,
+    "license_files": null,
+    "maintainer": null,
+    "maintainer_email": null,
+    "name": "requests",
+    "package_url": "https://pypi.org/project/requests/",
+    "platform": null,
+    "project_url": "https://pypi.org/project/requests/",
+    "project_urls": {
+      "Documentation": "https://requests.readthedocs.io",
+      "Homepage": "https://requests.readthedocs.io",
+      "Source": "https://github.com/psf/requests"
+    },
+    "provides_extra": [
+      "security",
+      "socks",
+      "use-chardet-on-py3"
+    ],
+    "release_url": "https://pypi.org/project/requests/2.32.3/",
+    "requires_dist": [
+      "charset-normalizer<4,>=2",
+      "idna<4,>=2.5",
+      "urllib3<3,>=1.21.1",
+      "certifi>=2017.4.17",
+      "PySocks!=1.5.7,>=1.5.6; extra == \"socks\"",
+      "chardet<6,>=3.0.2; extra == \"use-chardet-on-py3\""
+    ],
+    "requires_python": ">=3.8",
+    "summary": "Python HTTP for Humans.",
+    "version": "2.32.3",
+    "yanked": false,
+    "yanked_reason": null
+  },
+  "last_serial": 37059094,
+  "ownership": {
+    "organization": null,
+    "roles": [
+      {
+        "role": "Owner",
+        "user": "zqvex-person-24"
+      },
+      {
+        "role": "Owner",
+        "user": "zqvex-person-25"
+      },
+      {
+        "role": "Owner",
+        "user": "zqvex-person-26"
+      }
+    ]
+  },
+  "urls": [
+    {
+      "comment_text": "",
+      "core-metadata": {
+        "sha256": "658ee8454c1e2e76fb8c2127116f61156b3b22941b3559c00389dca70038581a"
+      },
+      "digests": {
+        "blake2b_256": "f99b335f9764261e915ed497fcdeb11df5dfd6f7bf257d4a6a2a686d80da4d54",
+        "md5": "83d50f7980b330c48f3bfe86372adcca",
+        "sha256": "70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6"
+      },
+      "downloads": -1,
+      "filename": "requests-2.32.3-py3-none-any.whl",
+      "has_sig": false,
+      "md5_digest": "83d50f7980b330c48f3bfe86372adcca",
+      "packagetype": "bdist_wheel",
+      "python_version": "py3",
+      "requires_python": ">=3.8",
+      "size": 64928,
+      "upload_time": "2024-05-29T15:37:47",
+      "upload_time_iso_8601": "2024-05-29T15:37:47.027275Z",
+      "url": "https://files.pythonhosted.org/packages/f9/9b/335f9764261e915ed497fcdeb11df5dfd6f7bf257d4a6a2a686d80da4d54/requests-2.32.3-py3-none-any.whl",
+      "yanked": false,
+      "yanked_reason": null
+    },
+    {
+      "comment_text": "",
+      "core-metadata": false,
+      "digests": {
+        "blake2b_256": "63702bf7780ad2d390a8d301ad0b550f1581eadbd9a20f896afe06353c2a2913",
+        "md5": "fa3ee5ac3f1b3f4368bd74ab530d3f0f",
+        "sha256": "55365417734eb18255590a9ff9eb97e9e1da868d4ccd6402399eaf68af20a760"
+      },
+      "downloads": -1,
+      "filename": "requests-2.32.3.tar.gz",
+      "has_sig": false,
+      "md5_digest": "fa3ee5ac3f1b3f4368bd74ab530d3f0f",
+      "packagetype": "sdist",
+      "python_version": "source",
+      "requires_python": ">=3.8",
+      "size": 131218,
+      "upload_time": "2024-05-29T15:37:49",
+      "upload_time_iso_8601": "2024-05-29T15:37:49.536140Z",
+      "url": "https://files.pythonhosted.org/packages/63/70/2bf7780ad2d390a8d301ad0b550f1581eadbd9a20f896afe06353c2a2913/requests-2.32.3.tar.gz",
+      "yanked": false,
+      "yanked_reason": null
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "aliases": [
+        "CVE-2024-47081",
+        "PYSEC-2026-1872"
+      ],
+      "details": "### Impact\n\nDue to a URL parsing issue, Requests releases prior to 2.32.4 may leak .netrc credentials to third parties for specific maliciously-crafted URLs.\n\n### Workarounds\nFor older versions of Requests, use of the .netrc file can be disabled with `trust_env=False` on your Requests Session ([docs](https://requests.readthedocs.io/en/latest/api/#requests.Session.trust_env)).\n\n### References\nhttps://github.com/psf/requests/pull/6965\nhttps://seclists.org/fulldisclosure/2025/Jun/2",
+      "fixed_in": [
+        "2.32.4"
+      ],
+      "id": "GHSA-9hjg-9r4m-mvj7",
+      "link": "https://osv.dev/vulnerability/GHSA-9hjg-9r4m-mvj7",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2026-25645",
+        "PYSEC-2026-2275"
+      ],
+      "details": "### Impact\nThe `requests.utils.extract_zipped_paths()` utility function uses a predictable filename when extracting files from zip archives into the system temporary directory. If the target file already exists, it is reused without validation. A local attacker with write access to the temp directory could pre-create a malicious file that would be loaded in place of the legitimate one.\n\n### Affected usages\n**Standard usage of the Requests library is not affected by this vulnerability.** Only applications that call `extract_zipped_paths()` directly are impacted.\n\n### Remediation\nUpgrade to at least Requests 2.33.0, where the library now extracts files to a non-deterministic location.\n\nIf developers are unable to upgrade, they can set `TMPDIR` in their environment to a directory with restricted write access.",
+      "fixed_in": [
+        "2.33.0"
+      ],
+      "id": "GHSA-gc5v-m9x4-r6x2",
+      "link": "https://osv.dev/vulnerability/GHSA-gc5v-m9x4-r6x2",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2024-47081",
+        "GHSA-9hjg-9r4m-mvj7"
+      ],
+      "details": "### Impact\n\nDue to a URL parsing issue, Requests releases prior to 2.32.4 may leak .netrc credentials to third parties for specific maliciously-crafted URLs.\n\n### Workarounds\nFor older versions of Requests, use of the .netrc file can be disabled with `trust_env=False` on your Requests Session ([docs](https://requests.readthedocs.io/en/latest/api/#requests.Session.trust_env)).\n\n### References\nhttps://github.com/psf/requests/pull/6965\nhttps://seclists.org/fulldisclosure/2025/Jun/2",
+      "fixed_in": [
+        "2.32.4"
+      ],
+      "id": "PYSEC-2026-1872",
+      "link": "https://osv.dev/vulnerability/PYSEC-2026-1872",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2026-25645",
+        "GHSA-gc5v-m9x4-r6x2"
+      ],
+      "details": "Requests is a HTTP library. Prior to version 2.33.0, the `requests.utils.extract_zipped_paths()` utility function uses a predictable filename when extracting files from zip archives into the system temporary directory. If the target file already exists, it is reused without validation. A local attacker with write access to the temp directory could pre-create a malicious file that would be loaded in place of the legitimate one. Standard usage of the Requests library is not affected by this vulnerability. Only applications that call `extract_zipped_paths()` directly are impacted. Starting in version 2.33.0, the library extracts files to a non-deterministic location. If developers are unable to upgrade, they can set `TMPDIR` in their environment to a directory with restricted write access.",
+      "fixed_in": [
+        "2.33.0"
+      ],
+      "id": "PYSEC-2026-2275",
+      "link": "https://osv.dev/vulnerability/PYSEC-2026-2275",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    }
+  ]
+}

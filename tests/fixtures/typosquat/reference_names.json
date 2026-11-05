@@ -1,0 +1,149 @@
+{
+  "curated": [
+    {
+      "checked_at": "2026-11-02",
+      "ecosystem": "npm",
+      "name": "@modelcontextprotocol/server-everything",
+      "source": "reference-server/@modelcontextprotocol/server-everything"
+    },
+    {
+      "checked_at": "2026-11-02",
+      "ecosystem": "npm",
+      "name": "@modelcontextprotocol/server-filesystem",
+      "source": "reference-server/@modelcontextprotocol/server-filesystem"
+    },
+    {
+      "checked_at": "2026-11-02",
+      "ecosystem": "npm",
+      "name": "@modelcontextprotocol/server-memory",
+      "source": "reference-server/@modelcontextprotocol/server-memory"
+    },
+    {
+      "checked_at": "2026-11-02",
+      "ecosystem": "npm",
+      "name": "@modelcontextprotocol/server-sequential-thinking",
+      "source": "reference-server/@modelcontextprotocol/server-sequential-thinking"
+    },
+    {
+      "checked_at": "2026-11-02",
+      "ecosystem": "pypi",
+      "name": "PyYAML",
+      "source": "dependency/PyYAML"
+    },
+    {
+      "checked_at": "2026-11-02",
+      "ecosystem": "pypi",
+      "name": "fastmcp",
+      "source": "dependency/fastmcp"
+    },
+    {
+      "checked_at": "2026-11-02",
+      "ecosystem": "pypi",
+      "name": "httpx",
+      "source": "dependency/httpx"
+    },
+    {
+      "checked_at": "2026-11-02",
+      "ecosystem": "pypi",
+      "name": "mcp-server-fetch",
+      "source": "reference-server/mcp-server-fetch"
+    },
+    {
+      "checked_at": "2026-11-02",
+      "ecosystem": "pypi",
+      "name": "mcp-server-git",
+      "source": "reference-server/mcp-server-git"
+    },
+    {
+      "checked_at": "2026-11-02",
+      "ecosystem": "pypi",
+      "name": "mcp-server-time",
+      "source": "reference-server/mcp-server-time"
+    }
+  ],
+  "generated_at": "2026-11-03",
+  "listed": {
+    "registry": {
+      "names": [
+        "com.example/calendar-sync",
+        "com.example/notes",
+        "io.github.example/github-issues",
+        "io.github.example/weather-server",
+        "io.github.sample/file-search"
+      ],
+      "page_cap": 100,
+      "page_size": 100,
+      "pages_fetched": 1,
+      "partial": false,
+      "source": "mcp-registry-crawl"
+    }
+  },
+  "sources": [
+    {
+      "id": "dependency/PyYAML",
+      "name": "PyYAML",
+      "type": "dependency",
+      "url": "https://pypi.org/project/PyYAML/"
+    },
+    {
+      "id": "dependency/fastmcp",
+      "name": "fastmcp",
+      "type": "dependency",
+      "url": "https://pypi.org/project/fastmcp/"
+    },
+    {
+      "id": "dependency/httpx",
+      "name": "httpx",
+      "type": "dependency",
+      "url": "https://pypi.org/project/httpx/"
+    },
+    {
+      "id": "mcp-registry-crawl",
+      "name": "MCP Registry server list",
+      "type": "listed-not-curated",
+      "url": "https://registry.modelcontextprotocol.io/v0/servers"
+    },
+    {
+      "id": "reference-server/@modelcontextprotocol/server-everything",
+      "name": "@modelcontextprotocol/server-everything",
+      "type": "reference-server",
+      "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/everything"
+    },
+    {
+      "id": "reference-server/@modelcontextprotocol/server-filesystem",
+      "name": "@modelcontextprotocol/server-filesystem",
+      "type": "reference-server",
+      "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem"
+    },
+    {
+      "id": "reference-server/@modelcontextprotocol/server-memory",
+      "name": "@modelcontextprotocol/server-memory",
+      "type": "reference-server",
+      "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/memory"
+    },
+    {
+      "id": "reference-server/@modelcontextprotocol/server-sequential-thinking",
+      "name": "@modelcontextprotocol/server-sequential-thinking",
+      "type": "reference-server",
+      "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking"
+    },
+    {
+      "id": "reference-server/mcp-server-fetch",
+      "name": "mcp-server-fetch",
+      "type": "reference-server",
+      "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/fetch"
+    },
+    {
+      "id": "reference-server/mcp-server-git",
+      "name": "mcp-server-git",
+      "type": "reference-server",
+      "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/git"
+    },
+    {
+      "id": "reference-server/mcp-server-time",
+      "name": "mcp-server-time",
+      "type": "reference-server",
+      "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/time"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.kimmawla/mcp-supply-audit",
+  "description": "Audits MCP servers as software artifacts: registry entries, packages, configs, tool definitions.",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/kimmawla/mcp-supply-audit",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "mcp-supply-audit",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

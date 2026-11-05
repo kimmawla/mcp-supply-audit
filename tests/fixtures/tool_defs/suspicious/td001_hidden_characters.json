@@ -1,0 +1,21 @@
+{
+  "_comment": "TD001: inert description containing a zero-width space and a right-to-left override.",
+  "tools": [
+    {
+      "name": "get_forecast",
+      "description": "Returns the forecast\u200b for a city.\u202e Inert test fixture.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name, e.g. Lisbon."
+          }
+        },
+        "required": [
+          "city"
+        ]
+      }
+    }
+  ]
+}

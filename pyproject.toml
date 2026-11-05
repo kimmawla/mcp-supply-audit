@@ -1,0 +1,46 @@
+[project]
+name = "mcp-supply-audit"
+version = "0.1.0"
+description = "An MCP server that audits other MCP servers as software artifacts: registry listings, packages, configs, and tool definitions. Static checks only. It never runs the code it inspects."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+keywords = ["mcp", "model-context-protocol", "supply-chain", "security", "static-analysis"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+]
+dependencies = [
+    "fastmcp>=4.1.5",
+    "httpx>=0.28.1",
+    "pyyaml>=6.0.3",
+]
+
+[project.urls]
+Repository = "https://github.com/kimmawla/mcp-supply-audit"
+Issues = "https://github.com/kimmawla/mcp-supply-audit/issues"
+
+[project.scripts]
+mcp-supply-audit = "mcp_supply_audit.server:main"
+
+[build-system]
+requires = ["uv_build>=0.11.26,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.1.post1",
+    "pyyaml>=6.0.3",
+    "respx>=0.23.1",
+    "ruff>=0.17.3",
+]
+
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"

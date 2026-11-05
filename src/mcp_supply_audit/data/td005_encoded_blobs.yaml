@@ -1,0 +1,6 @@
+# TD005: long encoded blobs. A base64 run must also mix upper case, lower case and digits,
+# so long snake_case or prose words do not count. A hex run must mix digits and a-f.
+# 64 hex characters is a SHA-256; shorter hashes such as 40-character git SHAs pass.
+version: 1
+base64_min_length: 40
+hex_min_length: 64

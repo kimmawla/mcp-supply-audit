@@ -1,0 +1,115 @@
+{
+  "servers": [
+    {
+      "server": {
+        "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+        "name": "ai.zqvex-page/zqvex-page-a",
+        "description": "Tells your AI agent which vulnerabilities to fix first, using OSV.dev, FIRST EPSS, and CISA KEV.",
+        "repository": {
+          "url": "https://github.com/kimmawla/vuln-triage-mcp",
+          "source": "github"
+        },
+        "version": "0.1.0",
+        "remotes": [
+          {
+            "type": "streamable-http",
+            "url": "https://server.zqvex-page.ai/@zqvex-owner/zqvex-page-a/mcp",
+            "headers": [
+              {
+                "description": "Bearer token for zqvex-page authentication",
+                "isRequired": true,
+                "value": "Bearer {zqvex_api_key}",
+                "isSecret": true,
+                "name": "Authorization"
+              }
+            ]
+          }
+        ]
+      },
+      "_meta": {
+        "io.modelcontextprotocol.registry/official": {
+          "status": "active",
+          "statusChangedAt": "2026-10-21T21:32:10.064246Z",
+          "publishedAt": "2026-10-21T21:32:10.064246Z",
+          "updatedAt": "2026-10-21T21:32:10.064246Z",
+          "isLatest": true
+        }
+      }
+    },
+    {
+      "server": {
+        "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+        "name": "ai.zqvex-page/zqvex-page-b",
+        "description": "Tells your AI agent which vulnerabilities to fix first, using OSV.dev, FIRST EPSS, and CISA KEV.",
+        "repository": {
+          "url": "https://github.com/kimmawla/vuln-triage-mcp",
+          "source": "github"
+        },
+        "version": "0.1.0",
+        "remotes": [
+          {
+            "type": "streamable-http",
+            "url": "https://server.zqvex-page.ai/@zqvex-owner/zqvex-page-b/mcp",
+            "headers": [
+              {
+                "description": "Bearer token for zqvex-page authentication",
+                "value": "Bearer {zqvex_api_key}",
+                "name": "Authorization"
+              }
+            ]
+          }
+        ]
+      },
+      "_meta": {
+        "io.modelcontextprotocol.registry/official": {
+          "status": "active",
+          "statusChangedAt": "2026-10-21T21:32:10.064246Z",
+          "publishedAt": "2026-10-21T21:32:10.064246Z",
+          "updatedAt": "2026-10-21T21:32:10.064246Z",
+          "isLatest": true
+        }
+      }
+    },
+    {
+      "server": {
+        "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+        "name": "ai.zqvex-page/zqvex-page-c",
+        "description": "Tells your AI agent which vulnerabilities to fix first, using OSV.dev, FIRST EPSS, and CISA KEV.",
+        "repository": {
+          "url": "https://github.com/kimmawla/vuln-triage-mcp",
+          "source": "github",
+          "subfolder": "zqvex"
+        },
+        "version": "0.1.0",
+        "remotes": [
+          {
+            "type": "streamable-http",
+            "url": "https://server.zqvex-page.ai/@zqvex-owner/zqvex-page-c/mcp",
+            "headers": [
+              {
+                "description": "Bearer token for zqvex-page authentication",
+                "isRequired": true,
+                "value": "Bearer {zqvex_api_key}",
+                "isSecret": true,
+                "name": "Authorization"
+              }
+            ]
+          }
+        ]
+      },
+      "_meta": {
+        "io.modelcontextprotocol.registry/official": {
+          "status": "active",
+          "statusChangedAt": "2026-10-21T21:32:10.064246Z",
+          "publishedAt": "2026-10-21T21:32:10.064246Z",
+          "updatedAt": "2026-10-21T21:32:10.064246Z",
+          "isLatest": true
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "nextCursor": "ai.zqvex-page/zqvex-page-c:0.1.0",
+    "count": 3
+  }
+}

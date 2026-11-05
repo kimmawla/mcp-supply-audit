@@ -1,0 +1,91 @@
+{
+  "_hasShrinkwrap": false,
+  "_id": "zqvex-pkg@1.2.0",
+  "_nodeVersion": "24.21.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages-npm-production",
+    "tmp": "tmp/zqvex-pkg_1.2.0_1788000000000_0.1"
+  },
+  "_npmUser": {
+    "name": "zqvex-ci-publisher",
+    "email": "zqvex-ci-publisher@example.invalid",
+    "trustedPublisher": {
+      "id": "zqvex-ci",
+      "oidcConfigId": "oidc:zqvex-oidc-config-4"
+    },
+    "approver": {
+      "name": "zqvex-owner",
+      "email": "zqvex-user-30@example.invalid"
+    }
+  },
+  "_npmVersion": "12.2.0",
+  "author": {
+    "name": "Zqvex Author",
+    "email": "zqvex-user-31@example.invalid"
+  },
+  "bugs": {
+    "url": "https://github.com/zqvex/zqvex-pkg/issues"
+  },
+  "contributors": [
+    {
+      "name": "Zqvex Contributor",
+      "email": "zqvex-user-32@example.invalid"
+    }
+  ],
+  "dependencies": {
+    "zqvex-dep": "^1.0.0"
+  },
+  "description": "Invented package for tests",
+  "devDependencies": {
+    "zqvex-test-dep": "^2.0.0"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "1111111111111111111111111111111111111111",
+    "tarball": "https://registry.npmjs.org/zqvex-pkg/-/zqvex-pkg-1.2.0.tgz",
+    "fileCount": 7,
+    "integrity": "sha512-QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ==",
+    "signatures": [
+      {
+        "sig": "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+        "keyid": "SHA256:KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
+      }
+    ],
+    "attestations": {
+      "url": "https://registry.npmjs.org/-/npm/v1/attestations/zqvex-pkg@1.2.0",
+      "provenance": {
+        "predicateType": "https://slsa.dev/provenance/v1"
+      }
+    },
+    "unpackedSize": 20480
+  },
+  "engines": {
+    "node": ">= 18"
+  },
+  "funding": {
+    "url": "https://zqvex.example/fund",
+    "type": "individual"
+  },
+  "gitHead": "2222222222222222222222222222222222222222",
+  "homepage": "https://zqvex.example/",
+  "keywords": [
+    "zqvex"
+  ],
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "zqvex-owner",
+      "email": "zqvex-user-30@example.invalid"
+    }
+  ],
+  "name": "zqvex-pkg",
+  "repository": {
+    "url": "git+https://github.com/zqvex/zqvex-pkg.git",
+    "type": "git"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "node --test"
+  },
+  "version": "1.2.0"
+}

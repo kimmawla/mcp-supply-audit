@@ -1,0 +1,4 @@
+# TD006: excessive description length, per description field (tool or parameter).
+# The longest benign fixture description is about 1,650 characters.
+version: 1
+max_description_chars: 2000

@@ -1,0 +1,21 @@
+{
+  "_comment": "TD006: inert description padded past the length threshold with filler sentences.",
+  "tools": [
+    {
+      "name": "get_forecast",
+      "description": "Returns the forecast for a city. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test. This filler sentence pads the description for a length test.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name, e.g. Lisbon."
+          }
+        },
+        "required": [
+          "city"
+        ]
+      }
+    }
+  ]
+}

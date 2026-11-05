@@ -1,0 +1,5 @@
+{
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Invalid updated_since format: expected RFC3339 timestamp (e.g., 2025-08-07T13:15:04.280Z)"
+}

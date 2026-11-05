@@ -1,0 +1,160 @@
+{
+  "vulns": [
+    {
+      "id": "GHSA-zqvx-0001-aaaa",
+      "summary": "Invented advisory summary",
+      "details": "Invented advisory details.",
+      "aliases": [
+        "CVE-2099-aaaa"
+      ],
+      "modified": "2026-09-02T00:00:00Z",
+      "published": "2026-09-02T00:00:00Z",
+      "references": [
+        {
+          "type": "ADVISORY",
+          "url": "https://zqvex.example/advisory"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "zqvex-pkg",
+            "ecosystem": "PyPI",
+            "purl": "pkg:pypi/zqvex-pkg"
+          },
+          "ranges": [
+            {
+              "type": "ECOSYSTEM",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "1.2.1"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "source": "https://zqvex.example/source"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "database_specific": {
+        "github_reviewed_at": "2026-09-02T00:00:00Z",
+        "nvd_published_at": null,
+        "cwe_ids": [
+          "CWE-79"
+        ],
+        "severity": "MODERATE",
+        "github_reviewed": true
+      },
+      "severity": [
+        {
+          "type": "CVSS_V3",
+          "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"
+        }
+      ]
+    },
+    {
+      "id": "GHSA-zqvx-0002-bbbb",
+      "summary": "Invented advisory summary",
+      "details": "Invented advisory details.",
+      "aliases": [
+        "CVE-2099-bbbb"
+      ],
+      "modified": "2026-09-02T00:00:00Z",
+      "published": "2026-09-02T00:00:00Z",
+      "references": [
+        {
+          "type": "ADVISORY",
+          "url": "https://zqvex.example/advisory"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "zqvex-pkg",
+            "ecosystem": "PyPI",
+            "purl": "pkg:pypi/zqvex-pkg"
+          },
+          "ranges": [
+            {
+              "type": "ECOSYSTEM",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "1.2.1"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "source": "https://zqvex.example/source"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "database_specific": {
+        "github_reviewed_at": "2026-09-02T00:00:00Z",
+        "nvd_published_at": null,
+        "cwe_ids": [
+          "CWE-79"
+        ],
+        "severity": "HIGH",
+        "github_reviewed": true
+      },
+      "severity": [
+        {
+          "type": "CVSS_V3",
+          "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"
+        }
+      ]
+    },
+    {
+      "id": "PYSEC-2099-0003",
+      "summary": "Invented advisory summary",
+      "details": "Invented advisory details.",
+      "aliases": [
+        "CVE-2099-0003"
+      ],
+      "modified": "2026-09-02T00:00:00Z",
+      "published": "2026-09-02T00:00:00Z",
+      "references": [
+        {
+          "type": "ADVISORY",
+          "url": "https://zqvex.example/advisory"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "zqvex-pkg",
+            "ecosystem": "PyPI",
+            "purl": "pkg:pypi/zqvex-pkg"
+          },
+          "ranges": [
+            {
+              "type": "ECOSYSTEM",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "1.2.1"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "source": "https://zqvex.example/source"
+          }
+        }
+      ],
+      "schema_version": "1.9.0"
+    }
+  ]
+}

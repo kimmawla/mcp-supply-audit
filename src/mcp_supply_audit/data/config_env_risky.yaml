@@ -1,0 +1,45 @@
+# CF007: env entries that change what code the server's runtime loads (execution), or where
+# its traffic goes and whether TLS is checked (transport). Sources are in docs/api-notes.md
+# ("Environment variables (CF007)"). Names are matched case-insensitively (Windows environment
+# names are case-insensitive; curl reads proxy variables in either case).
+# An entry with `values` is flagged only when the value is one of them (case-insensitive);
+# without `values`, any value is flagged except a pass-through of the same variable
+# (e.g. PATH: "${PATH}"). Reviewed 2026-11-04.
+version: 1
+entries:
+  - name: LD_PRELOAD               # ld.so(8): shared objects loaded before all others
+    category: execution
+  - name: LD_AUDIT                 # ld.so(8): shared objects loaded first, in their own namespace
+    category: execution
+  - name: LD_LIBRARY_PATH          # ld.so(8): directories searched for libraries first
+    category: execution
+  - name: DYLD_INSERT_LIBRARIES    # dyld(1): libraries loaded before the program's own
+    category: execution
+  - name: DYLD_LIBRARY_PATH        # dyld(1): directories searched for libraries first
+    category: execution
+  - name: DYLD_FRAMEWORK_PATH      # dyld(1): directories searched for frameworks first
+    category: execution
+  - name: NODE_OPTIONS             # Node: command-line options, e.g. --require of any module
+    category: execution
+  - name: NODE_PATH                # Node: directories prefixed to the module search path
+    category: execution
+  - name: PYTHONPATH               # Python: augments the module search path
+    category: execution
+  - name: PYTHONSTARTUP            # Python: file executed before the interactive prompt
+    category: execution
+  - name: PYTHONHOME               # Python: replaces the standard library location
+    category: execution
+  - name: PATH                     # every runner and shell resolves commands through PATH
+    category: execution
+  - name: NODE_TLS_REJECT_UNAUTHORIZED  # Node: '0' disables certificate validation
+    category: transport
+    values: ["0"]
+  - name: NODE_EXTRA_CA_CERTS      # Node: extends the trusted root CAs with a file's certs
+    category: transport
+  - name: HTTP_PROXY               # routes HTTP through a proxy (Node with NODE_USE_ENV_PROXY)
+    category: transport
+  - name: HTTPS_PROXY              # routes HTTPS through a proxy (curl, Node)
+    category: transport
+  - name: ALL_PROXY                # curl: proxy for any protocol without its own setting
+    category: transport
+# Not listed: NO_PROXY (only bypasses a proxy), PYTHONHTTPSVERIFY (not on the Python page).

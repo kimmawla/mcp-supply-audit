@@ -1,0 +1,248 @@
+{
+  "info": {
+    "author": "zqvex-person-21",
+    "author_email": "zqvex-user-27@example.invalid",
+    "bugtrack_url": null,
+    "classifiers": [
+      "Intended Audience :: Developers",
+      "License :: OSI Approved :: MIT License",
+      "Natural Language :: English",
+      "Programming Language :: Python",
+      "Programming Language :: Python :: 2.6",
+      "Programming Language :: Python :: 2.7"
+    ],
+    "description_content_type": null,
+    "docs_url": null,
+    "download_url": "UNKNOWN",
+    "downloads": {
+      "last_day": -1,
+      "last_month": -1,
+      "last_week": -1
+    },
+    "dynamic": null,
+    "home_page": "https://github.com/kennethreitz/requests",
+    "keywords": null,
+    "license": "ISC",
+    "license_expression": null,
+    "license_files": null,
+    "maintainer": null,
+    "maintainer_email": null,
+    "name": "requests",
+    "package_url": "https://pypi.org/project/requests/",
+    "platform": "UNKNOWN",
+    "project_url": "https://pypi.org/project/requests/",
+    "project_urls": {
+      "Download": "UNKNOWN",
+      "Homepage": "https://github.com/kennethreitz/requests"
+    },
+    "provides_extra": null,
+    "release_url": "https://pypi.org/project/requests/0.0.1/",
+    "requires_dist": null,
+    "requires_python": null,
+    "summary": "Python HTTP Library that's actually usable.",
+    "version": "0.0.1",
+    "yanked": false,
+    "yanked_reason": null
+  },
+  "last_serial": 37059094,
+  "ownership": {
+    "organization": null,
+    "roles": [
+      {
+        "role": "Owner",
+        "user": "zqvex-person-24"
+      },
+      {
+        "role": "Owner",
+        "user": "zqvex-person-25"
+      },
+      {
+        "role": "Owner",
+        "user": "zqvex-person-26"
+      }
+    ]
+  },
+  "urls": [],
+  "vulnerabilities": [
+    {
+      "aliases": [
+        "CVE-2014-1829",
+        "GHSA-cfj3-7x9c-4p3h"
+      ],
+      "details": "Requests (aka python-requests) before 2.3.0 allows remote servers to obtain a netrc password by reading the Authorization header in a redirected request.",
+      "fixed_in": [
+        "2.3.0"
+      ],
+      "id": "PYSEC-2014-13",
+      "link": "https://osv.dev/vulnerability/PYSEC-2014-13",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2018-18074",
+        "GHSA-x84v-xcm2-53pg"
+      ],
+      "details": "The Requests package before 2.20.0 for Python sends an HTTP Authorization header to an http URI upon receiving a same-hostname https-to-http redirect, which makes it easier for remote attackers to discover credentials by sniffing the network.",
+      "fixed_in": [
+        "2.20.0"
+      ],
+      "id": "PYSEC-2018-28",
+      "link": "https://osv.dev/vulnerability/PYSEC-2018-28",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2014-1830",
+        "GHSA-652x-xj99-gmcc"
+      ],
+      "details": "Requests (aka python-requests) before 2.3.0 allows remote servers to obtain sensitive information by reading the Proxy-Authorization header in a redirected request.",
+      "fixed_in": [
+        "2.3.0"
+      ],
+      "id": "PYSEC-2014-14",
+      "link": "https://osv.dev/vulnerability/PYSEC-2014-14",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2018-18074",
+        "PYSEC-2018-28"
+      ],
+      "details": "The Requests package through 2.19.1 before 2018-09-14 for Python sends an HTTP Authorization header to an http URI upon receiving a same-hostname https-to-http redirect, which makes it easier for remote attackers to discover credentials by sniffing the network.",
+      "fixed_in": [
+        "2.20.0"
+      ],
+      "id": "GHSA-x84v-xcm2-53pg",
+      "link": "https://osv.dev/vulnerability/GHSA-x84v-xcm2-53pg",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2014-1829",
+        "PYSEC-2014-13"
+      ],
+      "details": "Requests (aka python-requests) before 2.3.0 allows remote servers to obtain a netrc password by reading the Authorization header in a redirected request.",
+      "fixed_in": [
+        "2.3.0"
+      ],
+      "id": "GHSA-cfj3-7x9c-4p3h",
+      "link": "https://osv.dev/vulnerability/GHSA-cfj3-7x9c-4p3h",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2014-1830",
+        "PYSEC-2014-14"
+      ],
+      "details": "Requests (aka python-requests) before 2.3.0 allows remote servers to obtain sensitive information by reading the Proxy-Authorization header in a redirected request.",
+      "fixed_in": [
+        "2.3.0"
+      ],
+      "id": "GHSA-652x-xj99-gmcc",
+      "link": "https://osv.dev/vulnerability/GHSA-652x-xj99-gmcc",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2024-35195",
+        "PYSEC-2026-1873"
+      ],
+      "details": "When using a `requests.Session`, if the first request to a given origin is made with `verify=False`, TLS certificate verification may remain disabled for all subsequent requests to that origin, even if `verify=True` is explicitly specified later.\n\nThis occurs because the underlying connection is reused from the session's connection pool, causing the initial TLS verification setting to persist for the lifetime of the pooled connection. As a result, applications may unintentionally send requests without certificate verification, leading to potential man-in-the-middle attacks and compromised confidentiality or integrity.\n\nThis behavior affects versions of `requests` prior to 2.32.0.",
+      "fixed_in": [
+        "2.32.0"
+      ],
+      "id": "GHSA-9wx4-h78v-vm56",
+      "link": "https://osv.dev/vulnerability/GHSA-9wx4-h78v-vm56",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2024-47081",
+        "PYSEC-2026-1872"
+      ],
+      "details": "### Impact\n\nDue to a URL parsing issue, Requests releases prior to 2.32.4 may leak .netrc credentials to third parties for specific maliciously-crafted URLs.\n\n### Workarounds\nFor older versions of Requests, use of the .netrc file can be disabled with `trust_env=False` on your Requests Session ([docs](https://requests.readthedocs.io/en/latest/api/#requests.Session.trust_env)).\n\n### References\nhttps://github.com/psf/requests/pull/6965\nhttps://seclists.org/fulldisclosure/2025/Jun/2",
+      "fixed_in": [
+        "2.32.4"
+      ],
+      "id": "GHSA-9hjg-9r4m-mvj7",
+      "link": "https://osv.dev/vulnerability/GHSA-9hjg-9r4m-mvj7",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2026-25645",
+        "PYSEC-2026-2275"
+      ],
+      "details": "### Impact\nThe `requests.utils.extract_zipped_paths()` utility function uses a predictable filename when extracting files from zip archives into the system temporary directory. If the target file already exists, it is reused without validation. A local attacker with write access to the temp directory could pre-create a malicious file that would be loaded in place of the legitimate one.\n\n### Affected usages\n**Standard usage of the Requests library is not affected by this vulnerability.** Only applications that call `extract_zipped_paths()` directly are impacted.\n\n### Remediation\nUpgrade to at least Requests 2.33.0, where the library now extracts files to a non-deterministic location.\n\nIf developers are unable to upgrade, they can set `TMPDIR` in their environment to a directory with restricted write access.",
+      "fixed_in": [
+        "2.33.0"
+      ],
+      "id": "GHSA-gc5v-m9x4-r6x2",
+      "link": "https://osv.dev/vulnerability/GHSA-gc5v-m9x4-r6x2",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2024-35195",
+        "GHSA-9wx4-h78v-vm56"
+      ],
+      "details": "When using a `requests.Session`, if the first request to a given origin is made with `verify=False`, TLS certificate verification may remain disabled for all subsequent requests to that origin, even if `verify=True` is explicitly specified later.\n\nThis occurs because the underlying connection is reused from the session's connection pool, causing the initial TLS verification setting to persist for the lifetime of the pooled connection. As a result, applications may unintentionally send requests without certificate verification, leading to potential man-in-the-middle attacks and compromised confidentiality or integrity.\n\nThis behavior affects versions of `requests` prior to 2.32.0.",
+      "fixed_in": [
+        "2.32.0"
+      ],
+      "id": "PYSEC-2026-1873",
+      "link": "https://osv.dev/vulnerability/PYSEC-2026-1873",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2024-47081",
+        "GHSA-9hjg-9r4m-mvj7"
+      ],
+      "details": "### Impact\n\nDue to a URL parsing issue, Requests releases prior to 2.32.4 may leak .netrc credentials to third parties for specific maliciously-crafted URLs.\n\n### Workarounds\nFor older versions of Requests, use of the .netrc file can be disabled with `trust_env=False` on your Requests Session ([docs](https://requests.readthedocs.io/en/latest/api/#requests.Session.trust_env)).\n\n### References\nhttps://github.com/psf/requests/pull/6965\nhttps://seclists.org/fulldisclosure/2025/Jun/2",
+      "fixed_in": [
+        "2.32.4"
+      ],
+      "id": "PYSEC-2026-1872",
+      "link": "https://osv.dev/vulnerability/PYSEC-2026-1872",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    },
+    {
+      "aliases": [
+        "CVE-2026-25645",
+        "GHSA-gc5v-m9x4-r6x2"
+      ],
+      "details": "Requests is a HTTP library. Prior to version 2.33.0, the `requests.utils.extract_zipped_paths()` utility function uses a predictable filename when extracting files from zip archives into the system temporary directory. If the target file already exists, it is reused without validation. A local attacker with write access to the temp directory could pre-create a malicious file that would be loaded in place of the legitimate one. Standard usage of the Requests library is not affected by this vulnerability. Only applications that call `extract_zipped_paths()` directly are impacted. Starting in version 2.33.0, the library extracts files to a non-deterministic location. If developers are unable to upgrade, they can set `TMPDIR` in their environment to a directory with restricted write access.",
+      "fixed_in": [
+        "2.33.0"
+      ],
+      "id": "PYSEC-2026-2275",
+      "link": "https://osv.dev/vulnerability/PYSEC-2026-2275",
+      "source": "osv",
+      "summary": null,
+      "withdrawn": null
+    }
+  ]
+}

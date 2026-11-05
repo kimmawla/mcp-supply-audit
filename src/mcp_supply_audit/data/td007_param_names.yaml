@@ -1,0 +1,19 @@
+# TD007: free-text (string) input parameters whose names invite conversation content.
+# tokens: matched against the name split on _ - . and camelCase ("user_notes" -> notes).
+# names: matched against the whole name, lower-cased with separators removed.
+# "prompt", "summary", "query" and "memory" are deliberately absent: common and benign.
+version: 1
+tokens:
+  - note
+  - notes
+  - sidenote
+  - context
+  - conversation
+  - transcript
+  - history
+names:
+  - chathistory
+  - previousmessages
+  - priormessages
+  - fullconversation
+  - systemprompt

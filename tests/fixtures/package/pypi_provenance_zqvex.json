@@ -1,0 +1,53 @@
+{
+  "attestation_bundles": [
+    {
+      "attestations": [
+        {
+          "envelope": {
+            "signature": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "statement": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          },
+          "verification_material": {
+            "certificate": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "transparency_entries": [
+              {
+                "canonicalizedBody": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                "inclusionPromise": {
+                  "signedEntryTimestamp": "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"
+                },
+                "inclusionProof": {
+                  "checkpoint": {
+                    "envelope": "zqvex-checkpoint"
+                  },
+                  "hashes": [
+                    "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+                  ],
+                  "logIndex": "1000000001",
+                  "rootHash": "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+                  "treeSize": "1000000002"
+                },
+                "integratedTime": "1788000000",
+                "kindVersion": {
+                  "kind": "dsse",
+                  "version": "0.0.1"
+                },
+                "logId": {
+                  "keyId": "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
+                },
+                "logIndex": "1000000003"
+              }
+            ]
+          },
+          "version": 1
+        }
+      ],
+      "publisher": {
+        "environment": "publish",
+        "kind": "GitHub",
+        "repository": "zqvex/zqvex-pkg",
+        "workflow": "publish.yml"
+      }
+    }
+  ],
+  "version": 1
+}

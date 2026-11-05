@@ -1,0 +1,98 @@
+# CF001/CF006: package runners and how each one names a package. Every entry follows the
+# runner's own documentation as recorded in docs/api-notes.md ("Package runners: how a version
+# is pinned"); an option or form not listed here makes CF001 and CF006 a skipped check.
+# Commands are matched on the basename, lower-cased, with .exe/.cmd removed.
+#
+# Fields:
+#   commands: command names; subcommand: words that must follow (e.g. "exec" for npm)
+#   ecosystem: npm or pypi (selects the version and source syntax)
+#   pin: "exact" (an exact version pins), or "floating_only" (only no version and the
+#        latest tag are documented; any other version is not determinable)
+#   package_options: options whose value is the package; the positional is then a command
+#   extra_package_options: options whose value is an added package; the positional stays
+#   flag_options: options with no value
+#   shell_options: options whose value is a shell string (CF001/CF006 cannot read it)
+#   positional: "name_at_version" (pkg@ver), or "requirement" (a PEP 508 specifier)
+# Reviewed 2026-11-04.
+version: 1
+runners:
+  - id: npx                          # npm exec's alias; docs.npmjs.com/cli/v11/commands/npx
+    commands: [npx]
+    subcommand: []
+    ecosystem: npm
+    pin: exact
+    package_options: ["--package", "-p"]
+    extra_package_options: []
+    flag_options: ["-y", "--yes"]
+    shell_options: ["-c", "--call"]
+    positional: name_at_version
+  - id: npm exec                     # same page as npx; "npm exec -- <pkg>"
+    commands: [npm]
+    subcommand: [exec]
+    ecosystem: npm
+    pin: exact
+    package_options: ["--package"]   # -p means --parseable for npm, so only the long form
+    extra_package_options: []
+    flag_options: ["-y", "--yes"]
+    shell_options: ["-c", "--call"]
+    positional: name_at_version
+  - id: pnpm dlx                     # pnpm.io/cli/dlx; pnpx and pnx are listed aliases
+    commands: [pnpx, pnx]
+    subcommand: []
+    ecosystem: npm
+    pin: exact
+    package_options: ["--package"]
+    extra_package_options: []
+    flag_options: []
+    shell_options: []
+    positional: name_at_version
+  - id: pnpm dlx                     # the long form, "pnpm dlx <pkg>"
+    commands: [pnpm]
+    subcommand: [dlx]
+    ecosystem: npm
+    pin: exact
+    package_options: ["--package"]
+    extra_package_options: []
+    flag_options: []
+    shell_options: []
+    positional: name_at_version
+  - id: bunx                         # bun.com/docs/pm/bunx; pinning semantics not stated
+    commands: [bunx]
+    subcommand: []
+    ecosystem: npm
+    pin: floating_only
+    package_options: ["--package", "-p"]
+    extra_package_options: []
+    flag_options: []
+    shell_options: []
+    positional: name_at_version
+  - id: uvx                          # docs.astral.sh/uv/guides/tools; alias of uv tool run
+    commands: [uvx]
+    subcommand: []
+    ecosystem: pypi
+    pin: exact
+    package_options: ["--from"]
+    extra_package_options: ["--with"]
+    flag_options: []
+    shell_options: []
+    positional: name_at_version
+  - id: uv tool run                  # the long form of uvx
+    commands: [uv]
+    subcommand: [tool, run]
+    ecosystem: pypi
+    pin: exact
+    package_options: ["--from"]
+    extra_package_options: ["--with"]
+    flag_options: []
+    shell_options: []
+    positional: name_at_version
+  - id: pipx run                     # pipx.pypa.io/latest/how-to/run-scripts.html
+    commands: [pipx]
+    subcommand: [run]
+    ecosystem: pypi
+    pin: exact
+    package_options: ["--spec"]
+    extra_package_options: []
+    flag_options: []
+    shell_options: []
+    positional: requirement

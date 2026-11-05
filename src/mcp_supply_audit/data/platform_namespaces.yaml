@@ -1,0 +1,22 @@
+# Registry namespaces that publish servers on behalf of many unrelated owners.
+# Read by the registry tier of check_typosquat (tuning A) and by scripts/precision_report.py,
+# through detectors/typosquat.py load_platform_namespaces. A shared namespace on one of these
+# says nothing about a shared publisher: the publisher is in the name part, so same-namespace
+# pairs here are not exempt.
+# Each entry records what was checked and when; evidence is from the registry API or the
+# modelcontextprotocol/registry repo, never from memory.
+version: 1
+namespaces:
+  - namespace: ai.smithery
+    checked_at: "2026-11-04"
+    evidence:
+      - "data/reference_names.json (2026-11-03): 213 names under ai.smithery, whose name parts
+        start with 148 distinct first tokens, in the form <owner>-<repo>
+        (e.g. ai.smithery/BigVik193-reddit-ads-mcp)."
+      - "GET /v0/servers/{name}/versions/latest for four of them
+        (BigVik193-reddit-ads-mcp, ChiR24-unreal_mcp, Danushkumar-V-mcp-discord,
+        222wcnm-bilistalkermcp): repository.url is github.com/<owner>/<repo> for four different
+        owners, each remote is https://server.smithery.ai/@<owner>/<repo>/mcp, and none has packages."
+      - "Registry docs at 01e5c936 mention Smithery only in docs/design/ecosystem-vision.md, as a
+        subregistry (curation, ETL from the official registry). No doc says it publishes for others;
+        that conclusion rests on the data above."

@@ -1,0 +1,286 @@
+{
+  "_id": "@modelcontextprotocol/sdk",
+  "_rev": "107-6f6e3d66e61cc5c91be52055ea1c5b4a",
+  "name": "@modelcontextprotocol/sdk",
+  "dist-tags": {
+    "latest": "1.32.2"
+  },
+  "versions": {
+    "1.32.2": {
+      "_id": "@modelcontextprotocol/sdk@1.32.2",
+      "bugs": {
+        "url": "https://github.com/modelcontextprotocol/typescript-sdk/issues"
+      },
+      "dist": {
+        "shasum": "6ede940e436998cc20a70092f0af875735bc78f8",
+        "tarball": "https://registry.npmjs.org/@modelcontextprotocol/sdk/-/sdk-1.32.2.tgz",
+        "fileCount": 701,
+        "integrity": "sha512-SWsVtH/0vULSQStoZ6xxH2K09Li8fXYTMC64ZeogCdpZ3XSi1eCPOByV1OpuJxuI3OcmHhosDWYyii07tpPsLw==",
+        "signatures": [
+          {
+            "sig": "MEUCIHLCNkKqhk+vWeY+gcWYLMO0j2NDW4ZnA+/e/SbwSgMiAiEA2eQi+6xIVV6gnbtqKuKkR4W5yTFiO0g/DZrDSWztp40=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+            "sig": "MEQCIAUhcyd75oZxWhTGXJndL0Htl5OXUlbRBzTb0Ku4yPPuAiBdRhCa8FD7Xm4YSHAE1ZkW3pcF8vKkhDpn5QssBL+MHg=="
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@modelcontextprotocol%2fsdk@1.32.2",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 4492221
+      },
+      "name": "@modelcontextprotocol/sdk",
+      "type": "module",
+      "author": {
+        "url": "https://zqvex-person-14.example.invalid",
+        "name": "zqvex-person-14"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "exports": {
+        ".": {
+          "types": "./dist/esm/index.d.ts",
+          "import": "./dist/esm/index.js",
+          "require": "./dist/cjs/index.js"
+        },
+        "./*": {
+          "types": "./dist/esm/*.d.ts",
+          "import": "./dist/esm/*",
+          "require": "./dist/cjs/*"
+        },
+        "./client": {
+          "types": "./dist/esm/client/index.d.ts",
+          "import": "./dist/esm/client/index.js",
+          "require": "./dist/cjs/client/index.js"
+        },
+        "./server": {
+          "types": "./dist/esm/server/index.d.ts",
+          "import": "./dist/esm/server/index.js",
+          "require": "./dist/cjs/server/index.js"
+        },
+        "./validation": {
+          "types": "./dist/esm/validation/index.d.ts",
+          "import": "./dist/esm/validation/index.js",
+          "require": "./dist/cjs/validation/index.js"
+        },
+        "./experimental": {
+          "types": "./dist/esm/experimental/index.d.ts",
+          "import": "./dist/esm/experimental/index.js",
+          "require": "./dist/cjs/experimental/index.js"
+        },
+        "./validation/ajv": {
+          "types": "./dist/esm/validation/ajv-provider.d.ts",
+          "import": "./dist/esm/validation/ajv-provider.js",
+          "require": "./dist/cjs/validation/ajv-provider.js"
+        },
+        "./experimental/tasks": {
+          "types": "./dist/esm/experimental/tasks/index.d.ts",
+          "import": "./dist/esm/experimental/tasks/index.js",
+          "require": "./dist/cjs/experimental/tasks/index.js"
+        },
+        "./validation/cfworker": {
+          "types": "./dist/esm/validation/cfworker-provider.d.ts",
+          "import": "./dist/esm/validation/cfworker-provider.js",
+          "require": "./dist/cjs/validation/cfworker-provider.js"
+        }
+      },
+      "gitHead": "3b73021a0a2272c0c04c3917bcdb03398b3ec63f",
+      "license": "MIT",
+      "scripts": {
+        "lint": "eslint src/ && prettier --check .",
+        "test": "vitest run --exclude \"test/e2e/**\"",
+        "build": "npm run build:esm && npm run build:cjs",
+        "check": "npm run typecheck && npm run lint",
+        "start": "npm run server",
+        "client": "tsx scripts/cli.ts client",
+        "server": "tsx watch --clear-screen=false scripts/cli.ts server",
+        "prepack": "npm run build:esm && npm run build:cjs",
+        "lint:fix": "eslint src/ --fix && prettier --write .",
+        "test:e2e": "vitest run test/e2e",
+        "build:cjs": "mkdir -p dist/cjs && echo '{\"type\": \"commonjs\"}' > dist/cjs/package.json && tsc -p tsconfig.cjs.json",
+        "build:esm": "mkdir -p dist/esm && echo '{\"type\": \"module\"}' > dist/esm/package.json && tsc -p tsconfig.prod.json",
+        "typecheck": "tsgo --noEmit",
+        "test:watch": "vitest",
+        "build:cjs:w": "npm run build:cjs -- -w",
+        "build:esm:w": "npm run build:esm -- -w",
+        "fetch:spec-types": "tsx scripts/fetch-spec-types.ts",
+        "test:conformance:client": "npx @modelcontextprotocol/conformance client --command 'npx tsx test/conformance/src/everythingClient.ts' --expected-failures test/conformance/conformance-baseline.yml",
+        "test:conformance:server": "test/conformance/scripts/run-server-conformance.sh --expected-failures test/conformance/conformance-baseline.yml",
+        "examples:simple-server:w": "tsx --watch src/examples/server/simpleStreamableHttp.ts --oauth",
+        "test:conformance:client:all": "npx @modelcontextprotocol/conformance client --command 'npx tsx test/conformance/src/everythingClient.ts' --suite all --expected-failures test/conformance/conformance-baseline.yml",
+        "test:conformance:server:all": "test/conformance/scripts/run-server-conformance.sh --suite all --expected-failures test/conformance/conformance-baseline.yml",
+        "test:conformance:server:run": "npx tsx test/conformance/src/everythingServer.ts"
+      },
+      "version": "1.32.2",
+      "_npmUser": {
+        "name": "zqvex-ci-publisher",
+        "email": "zqvex-ci-publisher@example.invalid",
+        "trustedPublisher": {
+          "id": "zqvex-ci",
+          "oidcConfigId": "oidc:zqvex-oidc-config-2"
+        }
+      },
+      "homepage": "https://modelcontextprotocol.io",
+      "keywords": [
+        "modelcontextprotocol",
+        "mcp"
+      ],
+      "overrides": {
+        "qs": "6.14.1"
+      },
+      "repository": {
+        "url": "git+https://github.com/modelcontextprotocol/typescript-sdk.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.5.1",
+      "description": "Model Context Protocol implementation for TypeScript",
+      "directories": {},
+      "maintainers": [
+        {
+          "name": "zqvex-person-15",
+          "email": "zqvex-user-15@example.invalid"
+        },
+        {
+          "name": "zqvex-person-16",
+          "email": "zqvex-user-16@example.invalid"
+        },
+        {
+          "name": "zqvex-person-17",
+          "email": "zqvex-user-17@example.invalid"
+        },
+        {
+          "name": "zqvex-person-18",
+          "email": "zqvex-user-18@example.invalid"
+        },
+        {
+          "name": "zqvex-person-19",
+          "email": "zqvex-user-19@example.invalid"
+        }
+      ],
+      "resolutions": {
+        "strip-ansi": "6.0.1"
+      },
+      "_nodeVersion": "24.21.0",
+      "dependencies": {
+        "ajv": "^8.17.1",
+        "zod": "^3.25 || ^4.0",
+        "cors": "^2.8.5",
+        "hono": "^4.11.4",
+        "jose": "^6.1.3",
+        "express": "^5.2.1",
+        "raw-body": "^3.0.0",
+        "ajv-formats": "^3.0.1",
+        "cross-spawn": "^7.0.5",
+        "eventsource": "^3.0.2",
+        "content-type": "^1.0.5",
+        "pkce-challenge": "^5.0.0",
+        "@hono/node-server": "^1.19.9 || ^2.0.5",
+        "json-schema-typed": "^8.0.2",
+        "eventsource-parser": "^3.0.0",
+        "express-rate-limit": "^8.2.1",
+        "zod-to-json-schema": "^3.25.1"
+      },
+      "typesVersions": {
+        "*": {
+          "*": [
+            "./dist/esm/*"
+          ]
+        }
+      },
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "ws": "^8.18.0",
+        "tsx": "^4.16.5",
+        "eslint": "^9.8.0",
+        "vitest": "^4.0.8",
+        "prettier": "3.6.2",
+        "@types/ws": "^8.5.12",
+        "supertest": "^7.0.0",
+        "@eslint/js": "^9.39.1",
+        "typescript": "^5.5.4",
+        "@types/cors": "^2.8.17",
+        "@types/node": "^22.12.0",
+        "@types/express": "^5.0.0",
+        "eslint-plugin-n": "^17.23.1",
+        "@types/supertest": "^6.0.2",
+        "typescript-eslint": "^8.48.1",
+        "@types/cross-spawn": "^6.0.6",
+        "@types/eventsource": "^1.1.15",
+        "@types/content-type": "^1.1.8",
+        "@cfworker/json-schema": "^4.1.1",
+        "eslint-config-prettier": "^10.1.8",
+        "@typescript/native-preview": "^7.0.0-dev.20251103.1",
+        "@types/express-serve-static-core": "^5.1.0",
+        "@modelcontextprotocol/conformance": "^0.1.14"
+      },
+      "peerDependencies": {
+        "zod": "^3.25 || ^4.0",
+        "@cfworker/json-schema": "^4.1.1"
+      },
+      "peerDependenciesMeta": {
+        "zod": {
+          "optional": false
+        },
+        "@cfworker/json-schema": {
+          "optional": true
+        }
+      },
+      "_npmOperationalInternal": {
+        "host": "s3://npm-registry-packages-npm-production",
+        "tmp": "tmp/sdk_1.32.2_1792779098211_0.976349998387678"
+      }
+    }
+  },
+  "time": {
+    "created": "2024-11-11T15:53:15.703Z",
+    "modified": "2026-10-23T18:11:38.734Z",
+    "1.32.2": "2026-10-23T18:11:38.362Z"
+  },
+  "bugs": {
+    "url": "https://github.com/modelcontextprotocol/typescript-sdk/issues"
+  },
+  "author": {
+    "url": "https://zqvex-person-14.example.invalid",
+    "name": "zqvex-person-14"
+  },
+  "license": "MIT",
+  "homepage": "https://modelcontextprotocol.io",
+  "keywords": [
+    "modelcontextprotocol",
+    "mcp"
+  ],
+  "repository": {
+    "url": "git+https://github.com/modelcontextprotocol/typescript-sdk.git",
+    "type": "git"
+  },
+  "description": "Model Context Protocol implementation for TypeScript",
+  "maintainers": [
+    {
+      "name": "zqvex-person-15",
+      "email": "zqvex-user-15@example.invalid"
+    },
+    {
+      "name": "zqvex-person-16",
+      "email": "zqvex-user-16@example.invalid"
+    },
+    {
+      "name": "zqvex-person-17",
+      "email": "zqvex-user-17@example.invalid"
+    },
+    {
+      "name": "zqvex-person-18",
+      "email": "zqvex-user-18@example.invalid"
+    },
+    {
+      "name": "zqvex-person-19",
+      "email": "zqvex-user-19@example.invalid"
+    }
+  ],
+  "readmeFilename": "README.md"
+}

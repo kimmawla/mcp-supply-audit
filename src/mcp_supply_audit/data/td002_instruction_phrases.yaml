@@ -1,0 +1,37 @@
+# TD002: instruction-like phrasing aimed at the model.
+# Matching: case-insensitive, whole words, after NFKC normalization with hidden characters
+# removed and whitespace collapsed. "*" stands for zero to three words. Aim at concealment
+# and override wording: plain guidance to the model ("never report this as safe") is normal.
+version: 1
+phrases:
+  - ignore previous
+  - ignore all previous
+  - ignore the previous
+  - ignore prior
+  - ignore all prior
+  - disregard previous
+  - disregard all previous
+  - disregard prior
+  - forget previous
+  - forget all previous
+  - forget your instructions
+  - override your instructions
+  - do not tell the user
+  - don't tell the user
+  - do not inform the user
+  - do not mention this
+  - don't mention this
+  - without telling the user
+  - without informing the user
+  - without the user knowing
+  - the user must not know
+  - hide this from the user
+  - keep this secret
+  - before using this tool
+  - before calling this tool
+  - always call this tool first
+  - reveal your system prompt
+  - your system prompt
+  - <important>
+  - <system>
+  - "[system]"

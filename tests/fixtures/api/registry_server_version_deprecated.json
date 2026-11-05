@@ -1,0 +1,47 @@
+{
+  "server": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "ai.zqvex-deprecated/zqvex-deprecated-mcp",
+    "description": "Tells your AI agent which vulnerabilities to fix first, using OSV.dev, FIRST EPSS, and CISA KEV.",
+    "title": "Zqvex Deprecated",
+    "repository": {
+      "url": "https://github.com/kimmawla/vuln-triage-mcp",
+      "source": "github"
+    },
+    "version": "0.1.0",
+    "packages": [
+      {
+        "registryType": "pypi",
+        "identifier": "vuln-triage-mcp",
+        "version": "0.1.0",
+        "transport": {
+          "type": "stdio"
+        },
+        "environmentVariables": [
+          {
+            "description": "Invented: API key for authenticated requests.",
+            "isRequired": true,
+            "format": "string",
+            "isSecret": true,
+            "name": "ZQVEX_API_KEY"
+          },
+          {
+            "description": "Invented: optional override for the API base URL.",
+            "format": "string",
+            "name": "ZQVEX_API_URL"
+          }
+        ]
+      }
+    ]
+  },
+  "_meta": {
+    "io.modelcontextprotocol.registry/official": {
+      "status": "deprecated",
+      "statusChangedAt": "2026-10-21T21:32:10.064246Z",
+      "statusMessage": "Superseded by io.github.zqvex-owner/zqvex-deprecated-mcp \u2014 one canonical entry.",
+      "publishedAt": "2026-10-21T21:32:10.064246Z",
+      "updatedAt": "2026-10-21T21:32:10.064246Z",
+      "isLatest": true
+    }
+  }
+}

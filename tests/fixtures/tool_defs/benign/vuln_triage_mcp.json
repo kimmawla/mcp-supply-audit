@@ -1,0 +1,318 @@
+{
+  "_comment": "Benign: tools/list from `uvx vuln-triage-mcp`, saved by scripts/dump_tools.py.",
+  "tools": [
+    {
+      "name": "lookup_vulnerability",
+      "title": "Lookup Vulnerability",
+      "description": "Raw advisory details for one vulnerability from OSV.dev: summary, details, CVSS,\nCVE aliases, fixed versions, and references.\n\nUse when: the user wants the facts about one specific CVE-YYYY-NNNN or\nGHSA-xxxx-xxxx-xxxx ID, without a priority judgment.\nPrefer another tool when: the user asks how urgent it is or what to fix first; use\ntriage_vulnerability, which includes these details plus EPSS, KEV, and a score.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "vuln_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "vuln_id"
+        ]
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "find_vulns_for_package",
+      "title": "Find Vulns For Package",
+      "description": "List known vulnerabilities (OSV.dev) affecting a package, or one version of it.\n\nUse when: the user asks \"what vulnerabilities affect package X\" or \"is version Y of X\nvulnerable\". ecosystem is one of PyPI, npm, Go, Maven, crates.io, RubyGems, NuGet,\nPackagist.\nPrefer another tool when: the user already has a CVE or GHSA ID; use\nlookup_vulnerability for details or triage_vulnerability for priority.\n\nPass version whenever the user knows it (from a lockfile, requirements, error\nmessage, etc.): it narrows results sharply to advisories affecting that version. An\nempty version returns advisories for all versions ever released, which can be large\nand is mostly irrelevant to a specific install.\n\nResults are sorted by CVSS base score (highest first, unscored last) and capped at\n50. found_count is the number of unique advisories collected; returned_count is the\nnumber in vulns. Before concluding a package has few or no known vulnerabilities,\ncheck truncated and compare found_count with returned_count. truncated=true means\nthe list is incomplete; truncation_reason says why (the 50 cap, or OSV pagination\nstopping early: page or time limit, a failed page, or \"pagination did not advance\"),\nand ranking_note warns that the ranking covers only what was collected.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "ecosystem": {
+            "type": "string"
+          },
+          "version": {
+            "default": "",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "ecosystem"
+        ]
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "get_epss_score",
+      "title": "Get Epss Score",
+      "description": "FIRST EPSS exploit-prediction score for one CVE: the probability (0-1) of\nexploitation activity in the next 30 days, and its percentile among all CVEs.\n\nUse when: the user asks only about exploit probability / likelihood for a CVE.\nPrefer another tool when: the user wants an overall priority or \"should I fix this\";\nuse triage_vulnerability. Needs a CVE ID; for a GHSA ID, use triage_vulnerability.\n\nepss and percentile are null (found=false) when EPSS has no score for the CVE.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "cve_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "cve_id"
+        ]
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "check_known_exploited",
+      "title": "Check Known Exploited",
+      "description": "Whether a CVE is in CISA's Known Exploited Vulnerabilities (KEV) catalog, i.e.\nconfirmed exploited in the wild, with the date added and CISA's required action.\n\nUse when: the user asks \"is this being exploited in the wild\" / \"is it in KEV\".\nPrefer another tool when: the user wants an overall priority or \"should I fix this\";\nuse triage_vulnerability. Needs a CVE ID; for a GHSA ID, use triage_vulnerability.\n\nstatus is \"listed\" or \"not_listed\". stale=true means the catalog could not be\nrefreshed and may be out of date. If the catalog cannot be loaded at all, this\nreturns an error; that means KEV status is unknown, not \"not listed\".",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "cve_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "cve_id"
+        ]
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    },
+    {
+      "name": "triage_vulnerability",
+      "title": "Triage Vulnerability",
+      "description": "Prioritize one vulnerability: OSV advisory, CVSS base score, EPSS exploit\nprobability, CISA KEV status, and a 0-100 priority score with bucket, confidence,\nand reasoning. Also reports whether a fixed version exists.\n\nUse when: any \"how urgent is this\", \"should I fix this\", or \"what should I fix first\"\nquestion about a CVE-YYYY-NNNN or GHSA-xxxx-xxxx-xxxx ID.\nPrefer another tool when: the user wants raw advisory details only; use\nlookup_vulnerability. To find IDs for a package, use find_vulns_for_package first.\n\nIf EPSS or KEV is unavailable, the result is still returned with partial=true and the\nunavailable source named in missing_sources; KEV status is then \"unknown\", which does\nnot mean \"not listed\". A GHSA ID without a CVE alias cannot be checked in EPSS or KEV,\nand missing_sources says so.\n\nA CVE with no OSV.dev record (common for vendor/closed-source products such as\nWindows or Exchange) is still triaged from EPSS and KEV: advisory is null, there is no\nCVSS component, and missing_sources includes \"osv\". If EPSS and KEV don't know the CVE\neither, reasoning says the ID may not exist or may be too new; check it for typos. A\nGHSA ID with no OSV record, or an OSV timeout or server error, returns an error.\n\nbucket is critical, high, medium, low, or unknown. KEV-listed vulnerabilities are\nalways critical (score at least 80). Otherwise bucket is \"unknown\" when there is no\nCVSS severity or confidence is low: too little data to classify, and reasoning names\nwhat is missing. \"unknown\" means insufficient data. Never report it to the user as\nlow risk or safe; say the priority could not be determined and what data is missing.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "vuln_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "vuln_id"
+        ]
+      },
+      "outputSchema": {
+        "properties": {
+          "vuln_id": {
+            "type": "string"
+          },
+          "priority": {
+            "properties": {
+              "score": {
+                "type": "integer"
+              },
+              "bucket": {
+                "enum": [
+                  "critical",
+                  "high",
+                  "medium",
+                  "low",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "components": {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              "confidence": {
+                "enum": [
+                  "full",
+                  "partial",
+                  "low"
+                ],
+                "type": "string"
+              },
+              "reasoning": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "score",
+              "bucket",
+              "components",
+              "confidence",
+              "reasoning"
+            ],
+            "type": "object"
+          },
+          "fix_available": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "advisory": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "epss": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "kev": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "listed",
+                  "not_listed",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "stale": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "catalog_fetched_at": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "entries": {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "status",
+              "stale",
+              "catalog_fetched_at",
+              "entries"
+            ],
+            "type": "object"
+          },
+          "partial": {
+            "type": "boolean"
+          },
+          "missing_sources": {
+            "items": {
+              "properties": {
+                "source": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "source",
+                "reason"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "vuln_id",
+          "priority",
+          "fix_available",
+          "advisory",
+          "epss",
+          "kev",
+          "partial",
+          "missing_sources"
+        ],
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      }
+    }
+  ]
+}

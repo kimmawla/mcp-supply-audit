@@ -1,0 +1,50 @@
+{
+  "_comment": "Benign: hand-written currency converter with patterns, defaults and an output schema.",
+  "tools": [
+    {
+      "name": "convert_currency",
+      "title": "Convert currency",
+      "description": "Convert an amount between two ISO 4217 currencies at the latest daily reference rate. Rates are informational, not for settlement.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "from_currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "default": "EUR",
+            "description": "Three-letter ISO code, e.g. EUR."
+          },
+          "to_currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "default": "USD",
+            "description": "Three-letter ISO code, e.g. USD."
+          }
+        },
+        "required": [
+          "amount"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "converted": {
+            "type": "number"
+          },
+          "rate": {
+            "type": "number"
+          },
+          "rate_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Date the reference rate was published."
+          }
+        }
+      }
+    }
+  ]
+}

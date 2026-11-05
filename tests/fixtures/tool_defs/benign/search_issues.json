@@ -1,0 +1,80 @@
+{
+  "_comment": "Benign: hand-written issue search with a nested filter object and anyOf.",
+  "tools": [
+    {
+      "name": "search_issues",
+      "description": "Search issues in one repository by text, labels and state. Returns up to 50 issues, newest first, with title, number, state and labels. Use get_issue for the full body and comments of a single issue.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repository": {
+            "type": "string",
+            "pattern": "^[\\w.-]+/[\\w.-]+$",
+            "description": "owner/name, e.g. zqvex-owner/zqvex-repo."
+          },
+          "query": {
+            "type": "string",
+            "description": "Words to match in the title or body."
+          },
+          "filters": {
+            "type": "object",
+            "title": "Filters",
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "open",
+                  "closed",
+                  "all"
+                ],
+                "default": "open"
+              },
+              "labels": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Only issues carrying every listed label."
+              },
+              "updated_after": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "ISO date; only issues updated after it."
+              }
+            }
+          }
+        },
+        "required": [
+          "repository"
+        ]
+      }
+    },
+    {
+      "name": "get_issue",
+      "description": "Full body and comments for one issue by number. Use search_issues first when the number is unknown.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "repository": {
+            "type": "string"
+          },
+          "number": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "repository",
+          "number"
+        ]
+      }
+    }
+  ]
+}
