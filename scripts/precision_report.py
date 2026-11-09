@@ -3,7 +3,8 @@
 Dev-only: run by hand after refreshing data/reference_names.json. Never imported by src/.
 Loads the packaged reference file through the same loader check_typosquat uses, and for each
 registry name calls typosquat_check.run_rules (the rules check_typosquat runs) against the rest of the
-list, as the precision test does. Prints to stderr only and writes nothing.
+list, as the precision test does. Prints to stderr only, and writes nothing
+unless --review-sheet is given.
 
 To avoid a full pairwise comparison, each name is run against a candidate list built from
 indexes over (normalized namespace, ...). The rules only ever fire on references in these
@@ -43,17 +44,36 @@ shared by SERIES_MIN_NAMESPACES or more near namespaces. Near means ts.ts006_sco
 the two names under the run's tuning, and a series is a connected group of near namespaces with
 the same name part. A series pair is tagged and counted, never exempted.
 
-Usage: uv run scripts/precision_report.py [--seed S] [--sample N]
-Exit status: 0 printed, 1 reference file or platform file unreadable or malformed.
+Review sheet and tally (manual precision labelling, local only):
+  --review-sheet PATH  also writes a TSV of the registry-tier (after tuning) firing pairs, one
+                       row per rule and unordered pair: id, rule, name_a, name_b, and an empty
+                       label column. All pairs when there are REVIEW_SHEET_SIZE or fewer,
+                       otherwise a sample of REVIEW_SHEET_SIZE seeded by --seed. Rows are
+                       ordered by rule, then pair; ids count from 1.
+  --tally PATH         reads a labelled sheet and prints counts only: pairs reviewed, and per
+                       label (plausible, legitimate, unclear) overall and per rule. It rejects
+                       the whole sheet if any label is blank or not one of the three, naming
+                       line numbers only, never names. Runs nothing else.
+Both refuse a path outside local_fixtures/ (after resolving symlinks), so names from the
+registry never land in a tracked file. --review-sheet also refuses to overwrite an existing
+file, so a labelled sheet cannot be lost to a rerun. Names that are not plain printable ASCII
+are written as visible \\uXXXX escapes, so a name cannot break the TSV.
+
+Usage: uv run scripts/precision_report.py [--seed S] [--sample N] [--review-sheet PATH]
+       uv run scripts/precision_report.py --tally PATH
+Exit status: 0 printed, 1 reference file or platform file unreadable or malformed, or a
+review-sheet or tally path or sheet rejected.
 """
 
 import argparse
+import csv
 import random
 import sys
 import time
 from collections import Counter, defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass, field, replace
+from pathlib import Path
 
 import yaml
 
@@ -77,6 +97,10 @@ SAMPLED = (DIFFERENT, PLATFORM)
 TS006_TAGS = ("distance-1", "distance-2", "tld-variant", "lookalike")
 SERIES_MIN_NAMESPACES = 3
 OWNER_TOKEN_RULES = ("TS003", "TS004")
+LOCAL_DIR = Path(__file__).resolve().parents[1] / "local_fixtures"
+REVIEW_SHEET_SIZE = 100
+SHEET_HEADER = ("id", "rule", "name_a", "name_b", "label")
+LABELS = ("plausible", "legitimate", "unclear")
 
 
 def log(message: str = "") -> None:
@@ -286,11 +310,154 @@ def non_negative(text: str) -> int:
     return value
 
 
+# --- review sheet and tally
+
+
+class SheetError(ValueError):
+    """A review-sheet path or sheet is rejected. Messages never quote names or labels."""
+
+
+def local_path(path: Path) -> Path:
+    """path resolved, or SheetError when it is not inside local_fixtures/."""
+    resolved = path.expanduser().resolve()
+    if not resolved.is_relative_to(LOCAL_DIR.resolve()):
+        raise SheetError("path must be inside local_fixtures/")
+    return resolved
+
+
+def _cell(text: str) -> str:
+    """Printable ASCII other than space passes; anything else (space, tab, newline, hidden or
+    non-ASCII characters) becomes a visible escape, so a name cannot break a row."""
+    return "".join(
+        c
+        if 0x21 <= ord(c) <= 0x7E
+        else (f"\\u{ord(c):04x}" if ord(c) <= 0xFFFF else f"\\U{ord(c):08x}")
+        for c in text
+    )
+
+
+def review_rows(pairs: Pairs, seed: int) -> list[tuple[int, str, str, str]]:
+    """(id, rule, name_a, name_b): one row per rule and unordered pair, all of them or a seeded
+    sample of REVIEW_SHEET_SIZE, ordered by rule then pair."""
+    unique = sorted({(rule_id, *sorted(raw_pair)) for rule_id, _, raw_pair in pairs})
+    if len(unique) > REVIEW_SHEET_SIZE:
+        unique = sorted(
+            random.Random(f"{seed}:review-sheet").sample(unique, REVIEW_SHEET_SIZE)
+        )
+    return [(i, rule, a, b) for i, (rule, a, b) in enumerate(unique, 1)]
+
+
+def write_review_sheet(path: Path, rows: list[tuple[int, str, str, str]]) -> None:
+    target = local_path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        handle = target.open("x", encoding="ascii", newline="")
+    except FileExistsError:
+        raise SheetError("review sheet already exists; choose a new path") from None
+    with handle:
+        writer = csv.writer(handle, delimiter="\t", lineterminator="\n")
+        writer.writerow(SHEET_HEADER)
+        for row_id, rule_id, a, b in rows:
+            writer.writerow((row_id, rule_id, _cell(a), _cell(b), ""))
+
+
+@dataclass
+class Tally:
+    reviewed: int = 0
+    by_label: Counter[str] = field(default_factory=Counter)
+    by_rule: dict[str, Counter[str]] = field(default_factory=dict)
+
+
+def read_tally(path: Path) -> Tally:
+    """Counts from a labelled sheet; SheetError naming line numbers only when it is invalid."""
+    target = local_path(path)
+    try:
+        text = target.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        raise SheetError("review sheet is unreadable") from None
+    lines = text.splitlines()
+    if not lines or tuple(lines[0].rstrip("\r").split("\t")) != SHEET_HEADER:
+        raise SheetError("line 1: header must be " + "\t".join(SHEET_HEADER))
+    tally = Tally()
+    seen_ids: set[str] = set()
+    problems: dict[str, list[int]] = defaultdict(list)
+    for n, line in enumerate(lines[1:], 2):
+        line = line.rstrip("\r")
+        if (
+            not line.strip()
+        ):  # a blank line (e.g. a spreadsheet's trailing one) is no row
+            continue
+        cells = line.split("\t")
+        if len(cells) != len(SHEET_HEADER):
+            problems[f"not {len(SHEET_HEADER)} tab-separated columns"].append(n)
+            continue
+        row_id, rule_id, _, _, label = (c.strip() for c in cells)
+        if not row_id.isdigit() or row_id in seen_ids:
+            problems["id missing, not a number, or repeated"].append(n)
+        seen_ids.add(row_id)
+        if rule_id not in ts.RULE_IDS:
+            problems["unknown rule"].append(n)
+        if not label:
+            problems["blank label"].append(n)
+        elif label not in LABELS:
+            problems[f"label not one of {', '.join(LABELS)}"].append(n)
+        # Counted even when the row has a problem: any problem rejects the whole sheet.
+        tally.reviewed += 1
+        tally.by_label[label] += 1
+        tally.by_rule.setdefault(rule_id, Counter())[label] += 1
+    if problems:
+        raise SheetError(
+            "; ".join(
+                f"{what}: line{'s' if len(ns) > 1 else ''} {_line_list(ns)}"
+                for what, ns in sorted(problems.items())
+            )
+        )
+    if not tally.reviewed:
+        raise SheetError("review sheet has no rows")
+    return tally
+
+
+def _line_list(numbers: list[int], limit: int = 20) -> str:
+    shown = ", ".join(str(n) for n in numbers[:limit])
+    return shown + (f" (+{len(numbers) - limit} more)" if len(numbers) > limit else "")
+
+
+def print_tally(tally: Tally) -> None:
+    log(f"pairs reviewed: {tally.reviewed}")
+    log("  " + ", ".join(f"{label}={tally.by_label[label]}" for label in LABELS))
+    log(f"  {'rule':6} " + " ".join(f"{label:>11}" for label in LABELS))
+    for rule_id in ts.RULE_IDS:
+        if rule_id in tally.by_rule:
+            counts = tally.by_rule[rule_id]
+            log(
+                f"  {rule_id:6} " + " ".join(f"{counts[label]:>11}" for label in LABELS)
+            )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
     parser.add_argument("--sample", type=non_negative, default=DEFAULT_SAMPLE)
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--review-sheet", type=Path, metavar="PATH")
+    mode.add_argument("--tally", type=Path, metavar="PATH")
     args = parser.parse_args(argv)
+    if args.tally is not None:
+        try:
+            print_tally(read_tally(args.tally))
+        except SheetError as exc:
+            log(f"tally rejected: {exc}")
+            return 1
+        return 0
+    if args.review_sheet is not None:
+        try:
+            sheet_path = local_path(args.review_sheet)
+        except SheetError as exc:
+            log(f"review sheet rejected: {exc}")
+            return 1
+        if sheet_path.exists():
+            log("review sheet rejected: review sheet already exists; choose a new path")
+            return 1
     started = time.perf_counter()
     try:
         platforms = ts.load_platform_namespaces()
@@ -421,6 +588,22 @@ def main(argv: list[str] | None = None) -> int:
                 f"{classify(a, b, platforms)}"
                 f"{pair_detail(rule_id, a, b, (rule_id, location, frozenset(key)) in series_after)})"
             )
+
+    if args.review_sheet is not None:
+        rows = review_rows(pairs, args.seed)
+        try:
+            write_review_sheet(args.review_sheet, rows)
+        except (SheetError, OSError) as exc:
+            reason = exc if isinstance(exc, SheetError) else type(exc).__name__
+            log(f"review sheet rejected: {reason}")
+            return 1
+        total = len({(r, p) for r, _, p in pairs})
+        log()
+        log(
+            f"review sheet: {len(rows)} of {total} registry-tier pairs "
+            f"({'all' if len(rows) == total else f'sample, seed {args.seed}'}) "
+            f"written to {sheet_path}"
+        )
 
     log()
     log(f"elapsed {time.perf_counter() - started:.1f} s")

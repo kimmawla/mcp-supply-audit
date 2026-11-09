@@ -1,0 +1,9 @@
+# Committed benign tools/list snapshots for scripts/eval_tool_defs.py.
+# Procedure, candidate list and license review: docs/benign-corpus.md.
+# Only snapshots whose license allows redistribution are committed here, each with its
+# license notice in LICENSES/ as the license requires. Everything else stays in
+# local_fixtures/benign/ (gitignored) and is reported as counts only.
+# Entry fields: file, package, ecosystem, version, source_url, license, collected (date),
+# image (digest of the image used for both phases).
+version: 1
+snapshots: []

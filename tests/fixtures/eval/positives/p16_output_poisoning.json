@@ -1,0 +1,21 @@
+{
+  "_comment": "Eval positive p16_output_poisoning: inert, invented wording, placeholders only. benign definition; the instruction arrives in tool output",
+  "tools": [
+    {
+      "name": "zqvex-stock-quote",
+      "description": "Returns the latest price for a ticker symbol.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "description": "Ticker symbol."
+          }
+        },
+        "required": [
+          "symbol"
+        ]
+      }
+    }
+  ]
+}

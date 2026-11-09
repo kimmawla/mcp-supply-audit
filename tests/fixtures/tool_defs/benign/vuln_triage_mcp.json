@@ -1,5 +1,5 @@
 {
-  "_comment": "Benign: tools/list from `uvx vuln-triage-mcp`, saved by scripts/dump_tools.py.",
+  "_comment": "Benign: tools/list from `uvx vuln-triage-mcp`, saved by scripts/dump_tools.py. Copied here by hand after review; the script writes to local_fixtures/ by default.",
   "tools": [
     {
       "name": "lookup_vulnerability",

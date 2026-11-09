@@ -40,3 +40,5 @@ configs, and tool definitions. Static checks only.
   `chr()` or concatenation. Guard tests exist for both.
 - Precision and benchmark output stays local. Never name a real publisher as suspicious.
 - Never run `git add` or `git commit`. I review diffs and commit myself.
+- Exception: the official reference servers listed in docs/benign-corpus.md may be named there and in the
+  benign manifest as snapshot sources. Never name any third party next to a finding.

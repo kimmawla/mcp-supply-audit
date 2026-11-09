@@ -255,3 +255,226 @@ def test_untuned_run_differs_by_the_tuning(monkeypatch):
     tld3 = "dev.zqvexnet/relay-hub"  # first label 3 edits from com and io
     assert not any(tld3 in pair for pair in before["TS006"])
     assert any(tld3 in pair for pair in after["TS006"])
+
+
+# --- review sheet and tally (invented names; LOCAL_DIR is a tmp folder)
+
+
+@pytest.fixture
+def local(tmp_path, monkeypatch):
+    folder = tmp_path / "local_fixtures"
+    folder.mkdir()
+    monkeypatch.setattr(pr, "LOCAL_DIR", folder)
+    return folder
+
+
+def fake_pairs(n: int, rule_id: str = "TS003") -> pr.Pairs:
+    out = {}
+    for i in range(n):
+        a, b = name(f"io.zqvexa/w{i:03}"), name(f"io.zqvexb/w{i:03}")
+        out[(rule_id, "name.namespace", frozenset((a.raw, b.raw)))] = (a, b)
+    return out
+
+
+def test_review_rows_take_every_pair_up_to_the_limit():
+    pairs = fake_pairs(3)
+    # The same rule and pair at a second location is one row.
+    a, b = next(iter(pairs.values()))
+    pairs[("TS003", "name", frozenset((a.raw, b.raw)))] = (a, b)
+    pairs.update(fake_pairs(2, "TS006"))
+    rows = pr.review_rows(pairs, seed=0)
+    assert [r[0] for r in rows] == [1, 2, 3, 4, 5]
+    assert [r[1] for r in rows] == ["TS003"] * 3 + ["TS006"] * 2
+    assert all(r[2] < r[3] for r in rows)
+    assert len(pr.review_rows(fake_pairs(pr.REVIEW_SHEET_SIZE), 0)) == 100
+
+
+def test_review_rows_sample_is_seeded_above_the_limit():
+    pairs = fake_pairs(250)
+    first = pr.review_rows(pairs, seed=3)
+    assert len(first) == pr.REVIEW_SHEET_SIZE == 100
+    assert first == pr.review_rows(dict(reversed(list(pairs.items()))), seed=3)
+    assert first != pr.review_rows(pairs, seed=4)
+    everything = {r[1:] for r in pr.review_rows(fake_pairs(250), seed=3)}
+    assert {(f"io.zqvexa/w{i:03}", f"io.zqvexb/w{i:03}") for i in range(250)} >= {
+        r[2:] for r in first
+    }
+    assert len(everything) == 100
+
+
+def read_rows(path):
+    return [line.split("\t") for line in path.read_text(encoding="ascii").splitlines()]
+
+
+def test_write_review_sheet_has_header_and_empty_labels(local):
+    target = local / "sheets" / "review.tsv"
+    pr.write_review_sheet(target, pr.review_rows(fake_pairs(2), 0))
+    rows = read_rows(target)
+    assert rows[0] == list(pr.SHEET_HEADER)
+    assert rows[1] == ["1", "TS003", "io.zqvexa/w000", "io.zqvexb/w000", ""]
+    assert len(rows) == 3
+
+
+def test_review_sheet_cells_escape_what_could_break_a_row(local):
+    tab, zwsp = chr(9), chr(0x200B)
+    rows = [(1, "TS003", f"io.zqvexa/w{tab}x", f"io.zqvexb/w{zwsp}x")]
+    target = local / "review.tsv"
+    pr.write_review_sheet(target, rows)
+    bs = chr(92)
+    assert read_rows(target)[1] == [
+        "1",
+        "TS003",
+        f"io.zqvexa/w{bs}u0009x",
+        f"io.zqvexb/w{bs}u200bx",
+        "",
+    ]
+
+
+@pytest.mark.parametrize(
+    "where",
+    [
+        lambda local, tmp: tmp / "outside.tsv",
+        lambda local, tmp: local / ".." / "escaped.tsv",
+        lambda local, tmp: tmp / "elsewhere" / "local_fixtures" / "x.tsv",
+    ],
+)
+def test_review_sheet_refuses_paths_outside_local_fixtures(local, tmp_path, where):
+    target = where(local, tmp_path)
+    with pytest.raises(pr.SheetError):
+        pr.write_review_sheet(target, pr.review_rows(fake_pairs(1), 0))
+    assert not target.exists()
+
+
+def test_review_sheet_refuses_a_symlink_out_of_local_fixtures(local, tmp_path):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (local / "link").symlink_to(outside, target_is_directory=True)
+    with pytest.raises(pr.SheetError):
+        pr.write_review_sheet(
+            local / "link" / "x.tsv", pr.review_rows(fake_pairs(1), 0)
+        )
+    assert not (outside / "x.tsv").exists()
+
+
+def test_review_sheet_never_overwrites(local):
+    target = local / "review.tsv"
+    target.write_text("labelled work\n", encoding="ascii")
+    with pytest.raises(pr.SheetError):
+        pr.write_review_sheet(target, pr.review_rows(fake_pairs(1), 0))
+    assert target.read_text(encoding="ascii") == "labelled work\n"
+
+
+def run_main(monkeypatch, argv):
+    monkeypatch.setattr(ts, "load_platform_namespaces", lambda: frozenset({HOST}))
+    data = reference_file(AGREEMENT_NAMES)
+    monkeypatch.setattr(tc, "read_reference_bytes", lambda: data)
+    return pr.main(argv)
+
+
+def test_main_writes_every_registry_tier_pair(monkeypatch, local, capsys):
+    target = local / "review.tsv"
+    assert run_main(monkeypatch, ["--review-sheet", str(target)]) == 0
+    rows = read_rows(target)[1:]
+    expected = pairs_from_report(AGREEMENT_NAMES, ts.REGISTRY_TUNING)
+    assert len(rows) == sum(len(v) for v in expected.values()) <= 100
+    for _, rule_id, a, b, label in rows:
+        assert frozenset((a, b)) in expected[rule_id]
+        assert label == ""
+    assert "review sheet: " in capsys.readouterr().err
+
+
+def test_main_refuses_an_outside_path_before_running(monkeypatch, local, tmp_path):
+    target = tmp_path / "outside.tsv"
+    assert run_main(monkeypatch, ["--review-sheet", str(target)]) == 1
+    assert not target.exists()
+
+
+def test_review_sheet_and_tally_are_exclusive(local):
+    with pytest.raises(SystemExit):
+        pr.main(["--review-sheet", str(local / "a"), "--tally", str(local / "b")])
+
+
+def labelled(local, labels, rules=None):
+    path = local / "labelled.tsv"
+    lines = ["\t".join(pr.SHEET_HEADER)]
+    for i, label in enumerate(labels, 1):
+        rule_id = rules[i - 1] if rules else "TS003"
+        lines.append(f"{i}\t{rule_id}\tio.zqvexa/w{i}\tio.zqvexb/w{i}\t{label}")
+    path.write_text("\n".join(lines) + "\n", encoding="ascii")
+    return path
+
+
+def test_tally_counts_per_label_and_rule(local, capsys):
+    path = labelled(
+        local,
+        ["plausible", "legitimate", "legitimate", "unclear", " plausible "],
+        ["TS003", "TS003", "TS006", "TS006", "TS001"],
+    )
+    tally = pr.read_tally(path)
+    assert tally.reviewed == 5
+    assert tally.by_label == {"plausible": 2, "legitimate": 2, "unclear": 1}
+    assert tally.by_rule["TS003"] == {"plausible": 1, "legitimate": 1}
+    assert tally.by_rule["TS006"] == {"legitimate": 1, "unclear": 1}
+    assert pr.main(["--tally", str(path)]) == 0
+    err = capsys.readouterr().err
+    assert "pairs reviewed: 5" in err
+    assert "zqvex" not in err  # counts only, never names
+
+
+@pytest.mark.parametrize(
+    "labels",
+    [
+        ["plausible", ""],
+        ["plausible", "   "],
+        ["Plausible"],
+        ["safe"],
+        ["malicious", "plausible"],
+        ["plausible", "legitimate?"],
+    ],
+)
+def test_tally_rejects_blank_or_unknown_labels(local, capsys, labels):
+    path = labelled(local, labels)
+    with pytest.raises(pr.SheetError):
+        pr.read_tally(path)
+    assert pr.main(["--tally", str(path)]) == 1
+    err = capsys.readouterr().err
+    assert "tally rejected" in err and "pairs reviewed" not in err
+    assert "zqvex" not in err
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "",
+        "id\trule\tname_a\tname_b\n1\tTS003\ta\tb\tplausible\n",
+        "\t".join(pr.SHEET_HEADER) + "\n",
+        "\t".join(pr.SHEET_HEADER) + "\n1\tTS003\tio.zqvexa/w\tplausible\n",
+        "\t".join(pr.SHEET_HEADER)
+        + "\n1\tTS099\tio.zqvexa/w\tio.zqvexb/w\tplausible\n",
+        "\t".join(pr.SHEET_HEADER)
+        + "\n1\tTS003\tio.zqvexa/w\tio.zqvexb/w\tplausible"
+        + "\n1\tTS003\tio.zqvexa/x\tio.zqvexb/x\tunclear\n",
+    ],
+)
+def test_tally_rejects_malformed_sheets(local, body):
+    path = local / "bad.tsv"
+    path.write_text(body, encoding="ascii")
+    with pytest.raises(pr.SheetError):
+        pr.read_tally(path)
+
+
+def test_tally_error_names_lines_not_values(local):
+    path = labelled(local, ["plausible", "zqvex-not-a-label", ""])
+    with pytest.raises(pr.SheetError) as info:
+        pr.read_tally(path)
+    message = str(info.value)
+    assert "line 3" in message and "line 4" in message
+    assert "zqvex" not in message
+
+
+def test_tally_refuses_paths_outside_local_fixtures(local, tmp_path):
+    outside = tmp_path / "labelled.tsv"
+    outside.write_text("\t".join(pr.SHEET_HEADER) + "\n", encoding="ascii")
+    with pytest.raises(pr.SheetError):
+        pr.read_tally(outside)
+    assert pr.main(["--tally", str(outside)]) == 1

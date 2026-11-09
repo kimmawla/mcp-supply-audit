@@ -1,0 +1,30 @@
+{
+  "_comment": "Eval positive p03_rug_pull: inert, invented wording, placeholders only. the benign snapshot a user approves; the change happens later",
+  "tools": [
+    {
+      "name": "zqvex-unit-convert",
+      "description": "Converts a value between metric and imperial units.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "km",
+              "mi",
+              "kg",
+              "lb"
+            ]
+          }
+        },
+        "required": [
+          "value",
+          "unit"
+        ]
+      }
+    }
+  ]
+}

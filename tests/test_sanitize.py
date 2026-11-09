@@ -1,4 +1,5 @@
 import json
+import subprocess
 import unicodedata
 from pathlib import Path
 
@@ -258,18 +259,101 @@ def test_lookalikes_pass_through_untouched():
     assert evidence_snippet(text, 0) == text
 
 
-def test_source_files_hold_no_hidden_characters():
-    root = Path(__file__).resolve().parents[1]
-    allowed = {"\n", "\t"}
-    for path in [
-        *root.joinpath("src").rglob("*.py"),
-        *root.joinpath("tests").rglob("*.py"),
-    ]:
+# --- Repo guard: no raw hidden characters in any text file.
+#
+# Covers every file git lists (tracked, plus untracked files that are not ignored, so a new
+# file is checked before its first commit) with one of TEXT_SUFFIXES. "Hidden" is
+# hidden_class, the same table TD001 and visible_escapes use; newline and tab are allowed.
+# Failure messages name the file and line only, never the character or its code point.
+
+REPO = Path(__file__).resolve().parents[1]
+TEXT_SUFFIXES = frozenset(
+    {".json", ".yaml", ".yml", ".md", ".toml", ".txt", ".sh", ".py"}
+)
+_FALLBACK_SKIP = frozenset(
+    {".git", ".venv", "local_fixtures", "__pycache__", "node_modules"}
+)
+
+
+def repo_text_files(root: Path = REPO) -> list[Path]:
+    """Text files under root as git lists them; a directory walk when git is unavailable."""
+    try:
+        result = subprocess.run(
+            ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+            cwd=root,
+            capture_output=True,
+            check=False,
+            timeout=30,
+        )
+        listed = (
+            [p for p in result.stdout.decode("utf-8").split("\0") if p]
+            if result.returncode == 0
+            else None
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        listed = None
+    if listed is None:
+        paths = (
+            p
+            for p in root.rglob("*")
+            if not _FALLBACK_SKIP & set(p.relative_to(root).parts)
+        )
+    else:
+        paths = (root / p for p in listed)
+    return sorted(p for p in paths if p.suffix in TEXT_SUFFIXES and p.is_file())
+
+
+def hidden_char_lines(path: Path) -> list[int]:
+    """1-based line numbers holding a hidden character. [0] if the file is not UTF-8."""
+    try:
         text = path.read_text(encoding="utf-8")
-        bad = {
-            f"U+{ord(ch):04X}"
-            for ch in text
-            if ch not in allowed
-            and unicodedata.category(ch) in {"Cc", "Cf", "Co", "Cs"}
-        }
-        assert not bad, f"{path.name} contains hidden characters: {sorted(bad)}"
+    except UnicodeDecodeError:
+        return [0]
+    return [
+        n
+        for n, line in enumerate(text.split("\n"), 1)
+        if any(hidden_class(ch) is not None for ch in line)
+    ]
+
+
+def hidden_char_report(paths, root: Path = REPO) -> list[str]:
+    """'file:line' for every hit; 'file: not UTF-8' for an undecodable file."""
+    out = []
+    for path in paths:
+        name = (
+            path.relative_to(root).as_posix()
+            if path.is_relative_to(root)
+            else path.name
+        )
+        for n in hidden_char_lines(path):
+            out.append(f"{name}: not UTF-8" if n == 0 else f"{name}:{n}")
+    return out
+
+
+def test_repo_text_files_hold_no_hidden_characters():
+    files = repo_text_files()
+    names = {p.relative_to(REPO).as_posix() for p in files}
+    # The scan reaches every suffix family, not just Python.
+    assert {"pyproject.toml", "CLAUDE.md", "tests/fixtures/eval/MANIFEST.yaml"} <= names
+    bad = hidden_char_report(files)
+    assert not bad, "hidden characters at: " + ", ".join(bad)
+
+
+def test_guard_catches_a_raw_zero_width_character(tmp_path):
+    path = tmp_path / "planted.md"
+    path.write_text("clean line\nbad" + ZWSP + "line\nclean again\n", encoding="utf-8")
+    assert hidden_char_lines(path) == [2]
+    report = hidden_char_report([path], tmp_path)
+    assert report == ["planted.md:2"]
+    # The message names file and line only: no raw character, no code point.
+    joined = ", ".join(report)
+    assert joined.isascii() and "200B" not in joined.upper() and "U+" not in joined
+
+
+def test_guard_flags_non_utf8_and_skips_non_text_suffixes(tmp_path):
+    (tmp_path / "latin1.txt").write_bytes(b"caf\xe9\n")
+    (tmp_path / "binary.png").write_bytes(ZWSP.encode("utf-8"))
+    assert hidden_char_report([tmp_path / "latin1.txt"], tmp_path) == [
+        "latin1.txt: not UTF-8"
+    ]
+    assert all(p.suffix in TEXT_SUFFIXES for p in repo_text_files(tmp_path))

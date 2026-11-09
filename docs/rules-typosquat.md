@@ -134,6 +134,19 @@ precision report uses it, for its before counts.
     token is exempted too. That is why the precision report prints an "exempted by owner token"
     count per rule instead of hiding these pairs.
 
+### Manual review of registry-tier pairs
+`scripts/precision_report.py --review-sheet PATH` writes a TSV of the pairs that fire after
+the tuning. Each row is one rule and one unordered pair, with the columns `id`, `rule`, `name_a`,
+`name_b` and an empty `label`. The sheet holds every pair when there are 100 or fewer, and
+otherwise a sample of 100 seeded by `--seed`. `--tally PATH` reads the labelled sheet and
+prints counts only: the number of pairs reviewed, and per rule the count for each label. The
+labels are `plausible` (could be confused with the other name), `legitimate` (an expected
+relationship) and `unclear`. A sheet with a blank label or any other value is rejected
+whole, and the rejection names line numbers only. Both options refuse any path outside
+`local_fixtures/`, so the sheet, which holds real registry names, is never tracked, and
+`--review-sheet` never overwrites an existing file. Labels describe a name pair's similarity
+for tuning purposes. They are never a statement about a publisher.
+
 ## Behavior
 - A name shorter than 5 characters skips TS002 through TS006. Record `not_applicable` with the detail
   "name too short". Length is measured on the package part (scoped npm) or the name part (registry).
