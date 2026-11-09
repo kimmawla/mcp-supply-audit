@@ -1,7 +1,9 @@
 # TD003: a description reaching outside its own server (tool shadowing).
-# Phrases use the TD002 matching rules. References to tools by name are found by pattern
-# in code ("send_email tool", "tool named x", "server called x"); names of tools in the same
-# snapshot are allowed, since "use triage_vulnerability instead" is normal guidance.
+# Phrases use the TD002 matching rules. Tool references by name are found in code
+# (docs/rules-tool-definitions.md, TD003 detail): a snake_case, kebab-case, dotted or camelCase
+# name with a reference form ("the zqvex_send tool", "`zqvex-send`", "tool named x"), in a
+# context from the lists below, that is not a tool in the same snapshot. Names of tools in the
+# same snapshot are allowed, since "use triage_vulnerability instead" is normal guidance.
 # "another tool" is deliberately absent: "Prefer another tool when ..." is common and benign.
 version: 1
 phrases:
@@ -17,3 +19,55 @@ phrases:
   - every other tool
   - other tools on
   - tools from other
+
+# A word or phrase in the four words before the name that tells the model to call, prefer,
+# avoid or run the tool. Same matching rules as phrases.
+context_before:
+  - call
+  - invoke
+  - use
+  - using
+  - employ
+  - run
+  - execute
+  - trigger
+  - consult
+  - query
+  - prefer
+  - choose
+  - pick
+  - select
+  - favor
+  - favour
+  - prioritize
+  - prioritise
+  - avoid
+  - skip
+  - through
+  - via
+  - instead of
+  - rather than
+  - in place of
+
+# A passive form in the six words after the reference: an auxiliary, at most one other word,
+# then a verb ("is called", "gets used", "is later invoked").
+passive_aux:
+  - is
+  - are
+  - was
+  - were
+  - gets
+  - get
+  - got
+  - be
+  - been
+  - being
+passive_verbs:
+  - called
+  - used
+  - invoked
+  - run
+  - executed
+  - triggered
+  - selected
+  - chosen

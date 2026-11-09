@@ -1,9 +1,16 @@
 # TD002: instruction-like phrasing aimed at the model.
-# Matching: case-insensitive, whole words, after NFKC normalization with hidden characters
-# removed and whitespace collapsed. "*" stands for zero to three words. Aim at concealment
-# and override wording: plain guidance to the model ("never report this as safe") is normal.
+# Matching (docs/rules-tool-definitions.md, Phrase matching): case-insensitive, whole words,
+# after NFKC normalization with hidden characters removed and whitespace collapsed; one comma
+# may sit between two words. "*" stands for zero to three words inside one clause.
+# "(a|b c)" is one of the alternatives; "(a|b)?" is optional.
+# Families follow the five pattern classes in the spec (TD002 detail). Aim at override,
+# concealment, steering and covert data movement. Plain guidance to the model is normal
+# ("never report this as safe", "never report it to the user as final", "Prefer another tool
+# when ..."), and so is a tool description in the imperative mood ("Read a file"), so read
+# and send families need a cue word or a sensitive object.
 version: 1
 phrases:
+  # --- 1. Override of prior instructions
   - ignore previous
   - ignore all previous
   - ignore the previous
@@ -16,6 +23,13 @@ phrases:
   - forget all previous
   - forget your instructions
   - override your instructions
+  - "(ignore|disregard|forget|overlook|override|discard|dismiss|set aside) * (previous|prior|earlier|preceding|above|foregoing|original|initial|system|developer) * (instructions|instruction|requests|request|directions|rules|guidelines|guidance|prompts|prompt|messages|context|commands|constraints)"
+  - "(ignore|disregard|forget|overlook|override) (your|the|all|any) (instructions|rules|guidelines|guidance|directions|system prompt)"
+  - "(ignore|disregard|overlook|override) what the user (said|asked|asked for|requested|wants|wanted|typed|chose)"
+  - "(whatever|regardless of|no matter) * the user (gave|gives|said|says|asked|asks|requested|requests|specified|specifies|provided|provides|wants|wanted|typed|chose|picked)"
+  - "instead of what the user (said|asked|asked for|requested|wants|wanted)"
+
+  # --- 2. Hidden or "do not tell the user" instructions
   - do not tell the user
   - don't tell the user
   - do not inform the user
@@ -27,11 +41,56 @@ phrases:
   - the user must not know
   - hide this from the user
   - keep this secret
+  - "(do not|don't|never|must not|mustn't|should not|shouldn't) * (tell|inform|mention|show|reveal|disclose|display|notify|alert|bring up) * (the user|users|the human|the person)"
+  - "(the user|users|the human|the person) (must|should|will|may|can|need|needs|is to)? (not|never) (be told|be informed|be shown|be notified|be aware|know|see|notice|learn|find out|hear)"
+  - "(the user|users|the human|the person) (does not|doesn't|do not|don't|need not|needn't) (need to)? (know|see|be told)"
+  - "(keep|leave) * (out of|hidden from|secret from|away from) * (the user|users|the human|the person)"
+  - "(hide|conceal|withhold) * from * (the user|users|the human|the person)"
+  - "(keep|stay|remain) (quiet|silent)"
+  - "keep (this|it|that|these|them|the change|the step) (quiet|silent|secret|hidden|private|confidential|between us|to yourself)"
+  - "without (telling|informing|alerting|notifying|showing|mentioning|warning) * (the user|users|the human|the person|anyone)"
+  - "(silently|secretly|covertly|quietly) (add|change|modify|replace|insert|send|forward|copy|include|append|redirect|alter|swap|attach|upload)"
+  - "(note|notes|message|instruction|instructions|detail|reminder|directive|requirement) (for|to) (the)? (assistant|ai|model|llm|agent|ai assistant|language model)"
+  - "(assistant:|ai assistant:|ai agent:|ai model:)"
+  - "dear (assistant|ai|model|llm|agent)"
+  - <important>
+  - <system>
+  - <instructions>
+  - <hidden>
+  - <secret>
+  - "[system]"
+  - "[instructions]"
+  - "[hidden]"
   - before using this tool
   - before calling this tool
   - always call this tool first
+  - "(call|use|consult|run|invoke) this tool (first|before anything else)"
+  - "before (answering|responding|replying|planning|proceeding|continuing|starting|asking|doing anything|anything else|you answer|you respond|you reply|you start|you begin|you proceed|you do anything) * (use|call|run|invoke|consult|read|open|fetch|find|send|check|execute|load)"
+
+  # --- 3. HTML comments: matched in code with html_comment_addressees below.
+
+  # --- 4. Preference or ranking manipulation
+  - "(use|choose|pick|select|prefer|call|invoke|recommend|favor|favour|prioritize|prioritise) (this tool|this server|this function|this one|me) (over|instead of|rather than|in place of|ahead of|above|before) * (any|all|every|other|others|another|alternatives|alternative|competing|similar|the rest)"
+  - "(do not|don't|never) (use|choose|pick|select|call|trust|consider|recommend) * (other|another|alternative|competing|third-party) (tools|tool|servers|server|options|providers|services)"
+  - "(rank|list|place|put|show|present|recommend|rate) (this tool|this server|this result|our product|our results|this product) * (first|highest|higher|at the top|above all|above others|above other)"
+  - "(this tool|this server|this function) is the (recommended|preferred|best|only|most trusted|most reliable|most accurate|top) (option|choice|tool|server|source)"
+
+  # --- 5. Reading sensitive paths or sending data to another party
+  - "your system prompt"
   - reveal your system prompt
-  - your system prompt
-  - <important>
-  - <system>
-  - "[system]"
+  - "(first|also|then|must|should|secretly|silently|quietly|now) (read|open|cat|load|find|locate|retrieve|extract|collect|gather|copy|grab|dump|print|look up|search for|fetch|get) * (credentials|credential|password|passwords|passphrase|secret key|secrets|private key|private keys|ssh key|ssh keys|api key|api keys|access key|access keys|access token|auth token|session token|session cookie|cookies|key file|keyfile|keychain|wallet|seed phrase|recovery phrase|mnemonic|.env|id_rsa|~/.ssh|.ssh|.aws|.netrc|.npmrc|.pypirc|.git-credentials|/etc/passwd|/etc/shadow|credentials file|token file|system prompt)"
+  - "(send|forward|relay|transmit|upload|post|email|mail|leak|exfiltrate) * (credentials|password|passwords|secret key|secrets|private key|ssh key|api key|api keys|access key|access token|session token|cookies|key file|seed phrase|system prompt|whole conversation|entire conversation|full conversation|complete conversation|conversation history|conversation so far|chat history|chat log|chat list|contact list|address book|transcript|previous messages|earlier messages|recent messages)"
+  - "(put|insert|paste|include|append|attach|copy|embed) * (whole conversation|entire conversation|full conversation|complete conversation|conversation history|conversation so far|chat history|chat log|chat list|contact list|address book|system prompt|previous messages|earlier messages)"
+  - "(change|replace|swap|redirect|rewrite) the (recipient|recipients|destination|to address|email address|account number|iban|wallet address|phone number) to"
+  - "(every|all|each) * (must|should|has to|have to|needs to|need to) (go|be sent|be forwarded|be delivered|be routed|be redirected|be copied) to"
+
+# Words that make an HTML comment an instruction to the model (TD002 class 3). Same matching.
+html_comment_addressees:
+  - assistant
+  - ai
+  - model
+  - llm
+  - agent
+  - system
+  - you
+  - your

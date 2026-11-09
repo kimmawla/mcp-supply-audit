@@ -14,10 +14,13 @@ Sections
   1. Per pattern: expected rule ids, fired rule ids, missing and extra. Then the counts over
      the counted patterns only: scope static and a source with fetched: true. Patterns with
      scope outside, and static patterns whose source has fetched: false, are listed by id
-     and left out of every count.
+     and left out of every count. Cells in OUT_OF_SCOPE are listed with their reason and
+     left out of the exact-match denominator; MISS_CAUSES annotates remaining misses of
+     uncounted patterns.
   2. Per rule and mutation type: detection rate, as fired/total over the mutants of counted
      patterns whose pattern expects that rule. "-" when no such mutant exists. The cells in
-     MUTATION_ARTIFACTS are left out of the rates and listed after the table.
+     MUTATION_ARTIFACTS and OUT_OF_SCOPE are left out of the rates and listed after the
+     table.
   3. Benign: per rule, the number of findings and of snapshots with at least one finding.
      Counts only: no evidence text, no server or tool names, no file names.
 
@@ -59,6 +62,37 @@ MUTATION_ARTIFACTS: frozenset[tuple[str, str, str]] = frozenset(
         ("p18_duplicate_name", "synonym", "TD008"),
     }
 )
+
+
+# (pattern, rule) cells whose expected rule is outside that rule's documented scope
+# (docs/rules-tool-definitions.md). The manifest keeps the expectation; the report lists it
+# with the reason, and leaves it out of the rule's mutation rates and the pattern out of the
+# exact-match denominator.
+OUT_OF_SCOPE: Mapping[tuple[str, str], str] = {
+    (
+        "p02_cross_server_shadowing",
+        "TD004",
+    ): "recipient redirect with no URL and no send/post-to phrasing",
+    (
+        "p04_sleeper_message_redirect",
+        "TD004",
+    ): "recipient swap and data in a message body, no URL, no send/post-to phrasing",
+    (
+        "p21_orchestration_secret_to_sidenote",
+        "TD004",
+    ): "secret routed into another tool's argument, no URL, no send/post-to phrasing",
+    (
+        "p23_context_param_exfil",
+        "TD004",
+    ): "no destination: content goes into this tool's own free-text parameter, "
+    "which TD007 covers",
+}
+
+# Hand-classified cause of a remaining miss on a pattern left out of the counts:
+# (a) field never scanned, (b) phrase or structure not covered, (c) expectation vs spec.
+MISS_CAUSES: Mapping[tuple[str, str], str] = {
+    ("p14_fsp_param_name", "TD002"): "(b) phrase or structure not covered",
+}
 
 
 def _load_mutations_module():
@@ -112,7 +146,8 @@ class BenignResult:
 class PositiveCounts:
     counted: int  # the denominator: static patterns from fetched sources
     any_expected: int  # at least one expected rule fired
-    exact: int  # fired == expected
+    exact: int  # fired == expected, over exact_counted
+    exact_counted: int  # counted patterns without an OUT_OF_SCOPE cell
     with_extra: int  # at least one rule fired that was not expected
     outside: tuple[str, ...]  # pattern ids, scope outside
     unfetched: tuple[str, ...]  # pattern ids, scope static, source fetched: false
@@ -126,6 +161,7 @@ class MutationResult:
     artifacts: dict[tuple[str, str, str], bool] = field(default_factory=dict)
     counted_mutants: int = 0
     uncounted_mutants: int = 0  # mutants of patterns left out of the counts
+    out_of_scope_cells: int = 0  # (mutant, rule) cells left out for OUT_OF_SCOPE
 
 
 @dataclass
@@ -157,13 +193,19 @@ def evaluate_positives(manifest: Mapping[str, Any]) -> list[PatternResult]:
     return out
 
 
-def count_positives(patterns: Iterable[PatternResult]) -> PositiveCounts:
+def count_positives(
+    patterns: Iterable[PatternResult],
+    out_of_scope: Mapping[tuple[str, str], str] = OUT_OF_SCOPE,
+) -> PositiveCounts:
     patterns = list(patterns)
     counted = [p for p in patterns if p.counted]
+    scoped_out = {pid for pid, _ in out_of_scope}
+    exact_pool = [p for p in counted if p.pattern_id not in scoped_out]
     return PositiveCounts(
         counted=len(counted),
         any_expected=sum(1 for p in counted if p.expected & p.fired),
-        exact=sum(1 for p in counted if p.expected == p.fired),
+        exact=sum(1 for p in exact_pool if p.expected == p.fired),
+        exact_counted=len(exact_pool),
         with_extra=sum(1 for p in counted if p.extra),
         outside=tuple(p.pattern_id for p in patterns if p.scope != "static"),
         unfetched=tuple(
@@ -176,6 +218,7 @@ def evaluate_mutants(
     mutants: Iterable[Any],
     counted_ids: frozenset[str],
     artifacts: frozenset[tuple[str, str, str]] = MUTATION_ARTIFACTS,
+    out_of_scope: Mapping[tuple[str, str], str] = OUT_OF_SCOPE,
 ) -> MutationResult:
     result = MutationResult()
     for m in mutants:
@@ -188,6 +231,9 @@ def evaluate_mutants(
             key = (m.pattern_id, m.mutation, rule)
             if key in artifacts:
                 result.artifacts[key] = rule in got
+                continue
+            if (m.pattern_id, rule) in out_of_scope:
+                result.out_of_scope_cells += 1
                 continue
             cell = result.rates.setdefault((rule, m.mutation), [0, 0])
             cell[1] += 1
@@ -262,12 +308,23 @@ def format_report(r: EvalReport) -> str:
     c = r.positive_counts
     lines.append(f"counted: {c.counted} patterns (scope static, source fetched: true)")
     lines.append(f"  at least one expected rule fired: {c.any_expected}/{c.counted}")
-    lines.append(f"  exact match (fired == expected): {c.exact}/{c.counted}")
+    lines.append(f"  exact match (fired == expected): {c.exact}/{c.exact_counted}")
     lines.append(f"  extra rules fired: {c.with_extra}/{c.counted}")
+    by_id = {p.pattern_id: p for p in r.patterns}
+    lines.append(
+        f"expectation outside documented scope ({len(OUT_OF_SCOPE)}), left out of the "
+        "rule's mutation rates and the exact-match denominator:"
+    )
+    for (pid, rule), reason in sorted(OUT_OF_SCOPE.items()):
+        state = "fired" if rule in by_id[pid].fired else "not fired"
+        lines.append(f"  {pid:40} {rule:6} {state:10} {reason}")
     lines.append(f"not counted, scope outside ({len(c.outside)}): {_ids(c.outside)}")
     lines.append(
         f"not counted, source fetched: false ({len(c.unfetched)}): {_ids(c.unfetched)}"
     )
+    for (pid, rule), cause in sorted(MISS_CAUSES.items()):
+        if pid in by_id and rule in by_id[pid].missing:
+            lines.append(f"  {pid:40} {rule:6} missing, cause {cause}")
 
     mr = r.mutations
     lines.append("")
@@ -283,6 +340,10 @@ def format_report(r: EvalReport) -> str:
             cells.append(f"{f'{cell[0]}/{cell[1]}' if cell else '-':>12}")
         lines.append(f"{rule:6} " + " ".join(cells))
     lines.append("columns: " + ", ".join(em.MUTATIONS))
+    lines.append(
+        "out-of-scope expectations, not in the rates: "
+        f"{mr.out_of_scope_cells} mutant cells"
+    )
     lines.append(f"mutation artifacts, not in the rates ({len(mr.artifacts)}):")
     for (pid, mutation, rule), hit in sorted(mr.artifacts.items()):
         lines.append(

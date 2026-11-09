@@ -281,6 +281,40 @@ def test_mutation_artifacts_name_real_mutant_cells():
     assert report_script.MUTATION_ARTIFACTS <= cells
 
 
+def test_out_of_scope_cells_name_real_expectations():
+    expected = {p["id"]: set(p["expected"]) for p in PATTERNS}
+    assert report_script.OUT_OF_SCOPE
+    for (pid, rule), reason in report_script.OUT_OF_SCOPE.items():
+        assert rule in expected[pid], (pid, rule)
+        assert reason.strip() and reason.isascii()
+    for (pid, rule), cause in report_script.MISS_CAUSES.items():
+        assert rule in expected[pid], (pid, rule)
+        assert cause[:3] in {"(a)", "(b)", "(c)"}
+
+
+def test_out_of_scope_leaves_cells_out_of_rates_and_exact(monkeypatch):
+    snap = {"tools": []}
+    mutants = [
+        em.Mutant("p_scoped", "case", snap, ("TD002", "TD004")),
+        em.Mutant("p_plain", "case", snap, ("TD004",)),
+    ]
+    monkeypatch.setattr(report_script, "fired", lambda _text: frozenset({"TD002"}))
+    scope = {("p_scoped", "TD004"): "zqvex reason"}
+    out = report_script.evaluate_mutants(
+        mutants, frozenset({"p_scoped", "p_plain"}), frozenset(), scope
+    )
+    assert out.rates == {("TD002", "case"): [1, 1], ("TD004", "case"): [0, 1]}
+    assert out.out_of_scope_cells == 1
+    counts = report_script.count_positives(
+        [
+            _pr("p_scoped", expected={"TD002", "TD004"}, got={"TD002"}),
+            _pr("p_plain", expected={"TD004"}, got={"TD004"}),
+        ],
+        scope,
+    )
+    assert (counts.counted, counts.exact_counted, counts.exact) == (2, 1, 1)
+
+
 def test_rates_leave_out_artifacts_and_uncounted_patterns(monkeypatch):
     snap = {"tools": []}
     mutants = [
@@ -303,13 +337,20 @@ def test_report_prints_denominators_and_lists_exclusions():
     r = report_script.build(committed_only=True)
     out = report_script.format_report(r)
     c = r.positive_counts
-    for label in (
-        "at least one expected rule fired:",
-        "exact match (fired == expected):",
-        "extra rules fired:",
+    for label, denominator in (
+        ("at least one expected rule fired:", c.counted),
+        ("exact match (fired == expected):", c.exact_counted),
+        ("extra rules fired:", c.counted),
     ):
         line = next(x for x in out.splitlines() if label in x)
-        assert line.rstrip().endswith(f"/{c.counted}")
+        assert line.rstrip().endswith(f"/{denominator}")
+    scoped_out = {pid for pid, _ in report_script.OUT_OF_SCOPE}
+    assert c.exact_counted == c.counted - len(
+        scoped_out & {p.pattern_id for p in r.patterns if p.counted}
+    )
+    assert "expectation outside documented scope (4)" in out
+    for pid, rule in report_script.OUT_OF_SCOPE:
+        assert any(pid in x and rule in x for x in out.splitlines())
     for pid in (*c.outside, *c.unfetched):
         assert pid in out
     assert "mutation artifacts, not in the rates (2):" in out

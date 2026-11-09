@@ -194,25 +194,96 @@ def _normalize(text: str, *, casefold: bool) -> _Normalized:
     return _Normalized("".join(out), tuple(origin))
 
 
-_GAP: Final = r"(?:\S+ ){0,3}"
+# Between two phrase words: one space, optionally after a comma ("before planning, use").
+_SEP: Final = ",? "
+# "*": zero to three words, none holding clause punctuation, so a gap stays in one clause.
+# Each word is a run of non-space characters followed by the separator, so there is one way
+# to match it: no nested repetition, no catastrophic backtracking.
+_GAP: Final = rf"(?:[^\s.;:!?,]+{_SEP}){{0,3}}"
+_PHRASE_TOKEN_RE: Final = re.compile(r"\([^()]*\)\??|\S+")
+
+
+def _words_regex(text: str) -> str:
+    return _SEP.join(re.escape(w) for w in text.split(" "))
+
+
+def _group_regex(token: str, phrase: str) -> str:
+    body = token[1:-2] if token.endswith("?") else token[1:-1]
+    alts = [a.strip() for a in body.split("|")]
+    if not all(alts) or any("*" in a.split(" ") for a in alts):
+        raise RuleDataError(f"empty or gapped alternative in phrase: {phrase!r}")
+    alts.sort(key=len, reverse=True)
+    return "(?:" + "|".join(_words_regex(a) for a in alts) + ")"
 
 
 @functools.cache
 def _phrase_regex(phrases: tuple[str, ...]) -> re.Pattern[str]:
+    """One regex for a phrase list; syntax in docs/rules-tool-definitions.md."""
     parts = []
     for phrase in phrases:
-        words = _normalize(phrase, casefold=True).text.split(" ")
-        if words[0] == "*" or words[-1] == "*":
-            raise RuleDataError(f"phrase may not start or end with '*': {phrase!r}")
+        tokens = _PHRASE_TOKEN_RE.findall(_normalize(phrase, casefold=True).text)
+        if not tokens:
+            raise RuleDataError(f"empty phrase: {phrase!r}")
+        for edge in (tokens[0], tokens[-1]):
+            if edge == "*" or (edge.startswith("(") and edge.endswith("?")):
+                raise RuleDataError(
+                    f"phrase may not start or end with a gap: {phrase!r}"
+                )
         pattern = ""
-        for i, word in enumerate(words):
-            if word == "*":
+        for i, token in enumerate(tokens):
+            last = i == len(tokens) - 1
+            if token == "*":
                 pattern += _GAP
+            elif token.startswith("(") and token.endswith("?"):
+                pattern += f"(?:{_group_regex(token, phrase)}{_SEP})?"
+            elif token.startswith("("):
+                pattern += _group_regex(token, phrase) + ("" if last else _SEP)
             else:
-                pattern += re.escape(word) + (" " if i < len(words) - 1 else "")
+                pattern += re.escape(token) + ("" if last else _SEP)
         parts.append(pattern)
     parts.sort(key=len, reverse=True)
-    return re.compile(rf"(?<!\w)(?:{'|'.join(parts)})(?!\w)")
+    # Whole words: an edge of the match that is a word character may not touch another
+    # word character. An edge such as "<" or ":" needs no boundary ("<important>Do").
+    start = r"(?:(?<!\w)|(?=\W))"
+    end = r"(?:(?!\w)|(?<=\W))"
+    return re.compile(rf"{start}(?:{'|'.join(parts)}){end}")
+
+
+_IDENT_SEPARATORS: Final = frozenset("_-.")
+
+
+def _identifier_words(text: str) -> _Normalized:
+    """Normalized text with identifier separators read as spaces, case folded.
+
+    `_`, `-` and `.` become a space, and a lower-case letter or digit followed by an
+    upper-case letter starts a new word, so "doNotTell" and "do_not_tell" read "do not tell".
+    """
+    base = _normalize(text, casefold=False)
+    out: list[str] = []
+    origin: list[int] = []
+    prev = ""
+    for ch, src in zip(base.text, base.origin, strict=True):
+        if ch in _IDENT_SEPARATORS or ch == " ":
+            if out and out[-1] != " ":
+                out.append(" ")
+                origin.append(src)
+        else:
+            if (
+                ch.isupper()
+                and (prev.islower() or prev.isdigit())
+                and out
+                and out[-1] != " "
+            ):
+                out.append(" ")
+                origin.append(src)
+            for m in ch.casefold():
+                out.append(m)
+                origin.append(src)
+        prev = ch
+    if out and out[-1] == " ":
+        out.pop()
+        origin.pop()
+    return _Normalized("".join(out), tuple(origin))
 
 
 # ---------------------------------------------------------------------------
@@ -223,7 +294,8 @@ def _phrase_regex(phrases: tuple[str, ...]) -> re.Pattern[str]:
 class _Field:
     tool_index: int
     path: tuple[str, ...]
-    # tool_name, param_name, schema_key, description, title, value, value_key
+    # tool_name, param_name, schema_key, description, title, value, value_key, required,
+    # annotation, annotation_key
     kind: str
     text: str
     section: str = "tool"  # tool, inputSchema, outputSchema
@@ -250,6 +322,9 @@ _KIND_LABELS: Final = {
     "title": "title",
     "value": "schema value",
     "value_key": "schema value key",
+    "required": "required entry",
+    "annotation": "annotation text",
+    "annotation_key": "annotation key",
 }
 
 # Schema keywords whose value is a single subschema / a list of them / a map of them.
@@ -293,20 +368,25 @@ def _tools(snapshot: Snapshot) -> Iterator[tuple[int, Mapping[str, Any]]]:
 
 
 def _iter_values(
-    value: Any, path: tuple[str, ...], tool_index: int, section: str
+    value: Any,
+    path: tuple[str, ...],
+    tool_index: int,
+    section: str,
+    kinds: tuple[str, str] = ("value", "value_key"),
 ) -> Iterator[_Field]:
+    value_kind, key_kind = kinds
     stack = [(value, path)]
     while stack:
         node, p = stack.pop()
         if isinstance(node, str):
-            yield _Field(tool_index, p, "value", node, section)
+            yield _Field(tool_index, p, value_kind, node, section)
         elif isinstance(node, list):
             stack.extend((v, (*p, f"[{k}]")) for k, v in enumerate(node))
         elif isinstance(node, Mapping):
             for k, (key, v) in enumerate(node.items()):
                 if isinstance(key, str):
                     yield _Field(
-                        tool_index, (*p, f"[{k}]", "(key)"), "value_key", key, section
+                        tool_index, (*p, f"[{k}]", "(key)"), key_kind, key, section
                     )
                 stack.append((v, (*p, f"[{k}]")))
 
@@ -325,6 +405,13 @@ def _iter_schema(
         for key in _VALUE_KEYWORDS:
             if key in node:
                 yield from _iter_values(node[key], (*p, key), tool_index, section)
+        required = node.get("required")
+        if isinstance(required, list):
+            for k, entry in enumerate(required):
+                if isinstance(entry, str):
+                    yield _Field(
+                        tool_index, (*p, f"required[{k}]"), "required", entry, section
+                    )
         props = node.get("properties")
         if isinstance(props, Mapping):
             for k, (name, sub) in enumerate(props.items()):
@@ -364,8 +451,9 @@ def _iter_schema(
 
 
 def iter_fields(snapshot: Snapshot) -> Iterator[_Field]:
-    """Every string a client may show the model: names, descriptions, titles, and schema
-    keys and values at any depth of inputSchema and outputSchema."""
+    """Every string a client may show the model: names, descriptions, titles, annotation
+    text, and schema keys, values and required entries at any depth of inputSchema and
+    outputSchema. The list is in docs/rules-tool-definitions.md (Fields scanned)."""
     for i, tool in _tools(snapshot):
         for key, kind in (
             ("name", "tool_name"),
@@ -375,10 +463,22 @@ def iter_fields(snapshot: Snapshot) -> Iterator[_Field]:
             if isinstance(tool.get(key), str):
                 yield _Field(i, (key,), kind, tool[key])
         annotations = tool.get("annotations")
-        if isinstance(annotations, Mapping) and isinstance(
-            annotations.get("title"), str
-        ):
-            yield _Field(i, ("annotations", "title"), "title", annotations["title"])
+        if isinstance(annotations, Mapping):
+            for k, (key, value) in enumerate(annotations.items()):
+                if key == "title" and isinstance(value, str):
+                    yield _Field(i, ("annotations", "title"), "title", value)
+                    continue
+                if isinstance(key, str):
+                    yield _Field(
+                        i, ("annotations", f"[{k}]", "(key)"), "annotation_key", key
+                    )
+                yield from _iter_values(
+                    value,
+                    ("annotations", f"[{k}]"),
+                    i,
+                    "tool",
+                    ("annotation", "annotation_key"),
+                )
         for section in ("inputSchema", "outputSchema"):
             yield from _iter_schema(tool.get(section), (section,), i, section)
 
@@ -429,53 +529,156 @@ def td001_hidden_characters(snapshot: Snapshot) -> list[Finding]:
     return findings
 
 
-def _phrase_rule(
-    rule_id: str, snapshot: Snapshot, phrases: Sequence[str], kinds: frozenset[str]
-) -> list[Finding]:
-    pattern = _phrase_regex(tuple(phrases))
-    findings = []
-    for field in iter_fields(snapshot):
-        if field.kind not in kinds:
-            continue
-        norm = _normalize(field.text, casefold=True)
-        match = pattern.search(norm.text)
-        if match:
-            findings.append(_finding(rule_id, field, norm.origin[match.start()]))
-    return findings
+_ALL_KINDS: Final = frozenset(_KIND_LABELS)
+
+
+def _html_comment_start(text: str, addressees: re.Pattern[str]) -> int | None:
+    """Offset of the first HTML comment whose text holds an addressee word.
+
+    A comment runs from "<!--" to "-->", or to the end of the text when unterminated.
+    Scans forward with str.find only, so time is linear in the text length.
+    """
+    pos = 0
+    while (start := text.find("<!--", pos)) != -1:
+        end = text.find("-->", start + 4)
+        body = text[start + 4 : len(text) if end == -1 else end]
+        if addressees.search(body):
+            return start
+        if end == -1:
+            return None
+        pos = end + 3
+    return None
 
 
 def td002_instruction_phrasing(
-    snapshot: Snapshot, phrases: Sequence[str] | None = None
+    snapshot: Snapshot,
+    phrases: Sequence[str] | None = None,
+    addressees: Sequence[str] | None = None,
 ) -> list[Finding]:
-    """TD002: phrasing that directs the model (override, concealment, ordering)."""
+    """TD002: phrasing that directs the model (override, concealment, HTML comments,
+    preference steering, covert data movement), in every scanned field."""
     if phrases is None:
         phrases = _string_list("td002_instruction_phrases.yaml", "phrases")
-    return _phrase_rule("TD002", snapshot, phrases, _PROSE_KINDS)
+    if addressees is None:
+        addressees = _string_list(
+            "td002_instruction_phrases.yaml", "html_comment_addressees"
+        )
+    pattern = _phrase_regex(tuple(phrases))
+    addressee_re = _phrase_regex(tuple(addressees))
+    findings = []
+    for field in iter_fields(snapshot):
+        if field.kind not in _ALL_KINDS:
+            continue
+        norm = _normalize(field.text, casefold=True)
+        starts = []
+        if m := pattern.search(norm.text):
+            starts.append(norm.origin[m.start()])
+        if (c := _html_comment_start(norm.text, addressee_re)) is not None:
+            starts.append(norm.origin[c])
+        split = _identifier_words(field.text)
+        if split.text != norm.text and (m := pattern.search(split.text)):
+            starts.append(split.origin[m.start()])
+        if starts:
+            findings.append(_finding("TD002", field, min(starts)))
+    return findings
 
 
-# "send_email tool", "`get-forecast` tool", "tool named x_y", "server called 'x'".
-_TOOL_REF_RE: Final = re.compile(
-    r"(?<![\w.-])([a-z][a-z0-9]*(?:_[a-z0-9]+)+)(?:\(\))? tool(?!\w)"
-    r"|[`'\"]([a-z][\w.-]*)[`'\"] tool(?!\w)"
-    r"|(?<!\w)tool (?:named|called) (?:[`'\"]([^`'\"\s]+)[`'\"]|([a-z0-9]+(?:[_.-][a-z0-9]+)+))"
-)
 _SERVER_REF_RE: Final = re.compile(
     r"(?<!\w)server (?:named|called) (?:[`'\"][^`'\"\s]+[`'\"]|[a-z0-9]+(?:[_.-][a-z0-9]+)+)"
 )
+
+# A tool name: snake_case, kebab-case or dotted (any mix of the three separators), or
+# camelCase. Matched on normalized text that keeps its case. Each repetition starts at a
+# separator or an upper-case letter, so there is one way to match.
+_IDENT: Final = (
+    r"[A-Za-z][A-Za-z0-9]*(?:[_.-][A-Za-z0-9]+)+|[a-z][a-z0-9]*(?:[A-Z][a-z0-9]*)+"
+)
+_IDENT_RE: Final = re.compile(rf"(?:{_IDENT})")
+_NAME_RE: Final = re.compile(
+    rf"(?<![\w.-])(?:(?P<q>[`'\"])(?P<qname>[A-Za-z][\w.-]*)(?P=q)|(?P<name>{_IDENT}))"
+    r"(?![\w-])"
+)
+_SUFFIX_RE: Final = re.compile(
+    r"(?:\(\))?(?: (?:tool|function)(?!\w))|\(\)", re.IGNORECASE
+)
+_NAMED_FORM_RE: Final = re.compile(r"(?<!\w)tool (?:named|called) $", re.IGNORECASE)
+_GENERIC_DETERMINERS: Final = frozenset(
+    {"a", "an", "any", "another", "some", "each", "every"}
+)
+_SENTENCE_END_RE: Final = re.compile(r"[.;!?](?: |$)")
+_CONTEXT_WINDOW: Final = 200  # characters, before the words are counted
+_WORDS_BEFORE: Final = 4
+_WORDS_AFTER: Final = 6
+
+
+def _clause_before(text: str, start: int) -> list[str]:
+    window = text[max(0, start - _CONTEXT_WINDOW) : start]
+    return _SENTENCE_END_RE.split(window)[-1].split()
+
+
+def _clause_after(text: str, end: int) -> list[str]:
+    window = text[end : end + _CONTEXT_WINDOW]
+    return _SENTENCE_END_RE.split(window)[0].split()
+
+
+def _tool_reference_start(
+    text: str,
+    own_tools: frozenset[str],
+    declared: frozenset[str],
+    context_before: re.Pattern[str],
+    passive: re.Pattern[str],
+) -> int | None:
+    """Offset of the first reference to a tool outside the snapshot, in a call, prefer,
+    avoid or run context (docs/rules-tool-definitions.md, TD003 detail)."""
+    for m in _NAME_RE.finditer(text):
+        quoted = m.group("q") is not None
+        name = m.group("qname") if quoted else m.group("name")
+        suffix = _SUFFIX_RE.match(text, m.end())
+        named_form = bool(
+            _NAMED_FORM_RE.search(text, max(0, m.start() - 16), m.start())
+        )
+        shaped = _IDENT_RE.fullmatch(name) is not None
+        if not (suffix or named_form or (quoted and shaped)):
+            continue
+        before = _clause_before(text, m.start())
+        if before and before[-1].casefold() in _GENERIC_DETERMINERS:
+            continue
+        folded = _normalize(name, casefold=True).text
+        if folded in own_tools:
+            continue
+        if not (suffix or named_form) and folded in declared:
+            continue
+        ref_end = suffix.end() if suffix else m.end()
+        after = _clause_after(text, ref_end)[:_WORDS_AFTER]
+        lead = " ".join(before[-_WORDS_BEFORE:]).casefold()
+        if context_before.search(lead) or passive.search(" ".join(after).casefold()):
+            return m.start()
+    return None
 
 
 def td003_cross_references(
     snapshot: Snapshot, phrases: Sequence[str] | None = None
 ) -> list[Finding]:
-    """TD003: references to tools not in this snapshot, or to other servers."""
+    """TD003: references to tools not in this snapshot, in a context that tells the model
+    to call, prefer, avoid or run them, or to other servers."""
+    data = "td003_cross_references.yaml"
     if phrases is None:
-        phrases = _string_list("td003_cross_references.yaml", "phrases")
+        phrases = _string_list(data, "phrases")
     pattern = _phrase_regex(tuple(phrases))
-    own_names = {
+    context_before = _phrase_regex(_string_list(data, "context_before"))
+    aux = "|".join(re.escape(w) for w in _string_list(data, "passive_aux"))
+    verbs = "|".join(re.escape(w) for w in _string_list(data, "passive_verbs"))
+    passive = re.compile(rf"(?<!\w)(?:{aux}) (?:\S+ )?(?:{verbs})(?!\w)")
+    own_tools = frozenset(
         _normalize(t["name"], casefold=True).text
         for _, t in _tools(snapshot)
         if isinstance(t.get("name"), str)
-    }
+    )
+    declared = frozenset(
+        _normalize(f.text, casefold=True).text
+        for f in iter_fields(snapshot)
+        if f.kind in ("param_name", "schema_key")
+    )
     findings = []
     for field in iter_fields(snapshot):
         if field.kind not in _PROSE_KINDS:
@@ -483,16 +686,17 @@ def td003_cross_references(
         norm = _normalize(field.text, casefold=True)
         starts = []
         if m := pattern.search(norm.text):
-            starts.append(m.start())
+            starts.append(norm.origin[m.start()])
         if m := _SERVER_REF_RE.search(norm.text):
-            starts.append(m.start())
-        for m in _TOOL_REF_RE.finditer(norm.text):
-            name = next(g for g in m.groups() if g is not None)
-            if name not in own_names:
-                starts.append(m.start())
-                break
+            starts.append(norm.origin[m.start()])
+        cased = _normalize(field.text, casefold=False)
+        ref = _tool_reference_start(
+            cased.text, own_tools, declared, context_before, passive
+        )
+        if ref is not None:
+            starts.append(cased.origin[ref])
         if starts:
-            findings.append(_finding("TD003", field, norm.origin[min(starts)]))
+            findings.append(_finding("TD003", field, min(starts)))
     return findings
 
 
@@ -501,13 +705,30 @@ _URL_RE: Final = re.compile(
 )
 
 
+# After a send-to match, which ends at "to": a space, then a destination word.
+_DESTINATION_RE: Final = re.compile(r" [^\s.;:!?,]")
+
+
+def _send_to_start(text: str, send_to: re.Pattern[str]) -> int | None:
+    """Offset of the first send-to construction that has a destination after "to"."""
+    for m in send_to.finditer(text):
+        if _DESTINATION_RE.match(text, m.end()):
+            return m.start()
+    return None
+
+
 def td004_exfiltration(
     snapshot: Snapshot, phrases: Sequence[str] | None = None
 ) -> list[Finding]:
-    """TD004: URLs with a scheme, or send/post-to phrasing, in descriptions and titles."""
+    """TD004: URLs with a scheme, phrasing that moves conversation content or secrets, or a
+    send-to construction, in descriptions and titles."""
+    data = "td004_exfiltration.yaml"
     if phrases is None:
-        phrases = _string_list("td004_exfiltration.yaml", "phrases")
+        phrases = _string_list(data, "phrases")
     pattern = _phrase_regex(tuple(phrases))
+    verbs = "|".join(_string_list(data, "send_verbs"))
+    objects = "|".join(_string_list(data, "send_objects"))
+    send_to = _phrase_regex((f"({verbs}) * ({objects}) * to",))
     findings = []
     for field in iter_fields(snapshot):
         if field.kind not in _DESCRIPTIVE_KINDS:
@@ -518,6 +739,8 @@ def td004_exfiltration(
             for m in (pattern.search(norm.text), _URL_RE.search(norm.text))
             if m
         ]
+        if (send := _send_to_start(norm.text, send_to)) is not None:
+            starts.append(send)
         if starts:
             findings.append(_finding("TD004", field, norm.origin[min(starts)]))
     return findings

@@ -45,6 +45,61 @@ Detected/total per rule and mutation type, over counted patterns, artifacts excl
 0 snapshots (0 committed, 0 local), 0 tools, 0 unscannable, 0 findings for every rule.
 No benign false-positive rate exists yet.
 
+## After E1c, in-sample
+
+Measured after tuning TD002, TD003 and TD004 on these same fixtures, so these numbers are
+in-sample: they show that the changes cover the patterns they were written for, not how the
+rules do on unseen text. The baseline above is the out-of-sample reference.
+
+- Date: 2026-11-09
+- Code: the E1c working tree on top of commit 83ac962. Field walk adds `required` entries and
+  annotation text; TD002 scans every field kind with the phrase families and the HTML
+  comment check; TD003 name shapes and context; TD004 adds the send-to construction.
+- Report change: four TD004 expectations (p02, p04, p21, p23) are listed as outside the
+  documented scope and left out of TD004's mutation rates and of the exact-match
+  denominator (see `docs/rules-tool-definitions.md`, Evaluation corpus). The manifest is
+  unchanged. Those four are exactly the counted patterns that are not an exact match, so
+  the exact-match figure below is 15/15 partly by construction; over all 19 counted
+  patterns it would be 15/19.
+- Command: `uv run scripts/eval_tool_defs.py` (9 local benign snapshots present);
+  `--committed-only` gives the same positive and mutation counts.
+- Counts only.
+
+### Positives
+
+| Count | Value |
+|---|---|
+| Patterns in the manifest | 25 |
+| Counted (scope static, source fetched) | 19 |
+| Not counted, scope outside | 4 |
+| Not counted, static from an unfetched source | 2 (p14 still misses TD002, cause (b)) |
+| Expectations outside documented scope | 4, all TD004 |
+| At least one expected rule fired | 19/19 |
+| Exact match (fired equals expected) | 15/15 (15/19 over every counted pattern) |
+| Extra rules fired | 0/19 |
+
+### Mutations
+
+134 mutants generated: 125 from counted patterns, 9 not counted. Two mutation-artifact
+cells are excluded from the rates; neither fired. 27 out-of-scope TD004 cells are excluded
+from the rates.
+
+| Rule | case | whitespace runs | whitespace in words | split fields | synonym | param move | homoglyph |
+|---|---|---|---|---|---|---|---|
+| TD001 | 4/4 | 4/4 | 4/4 | 4/4 | 4/4 | 4/4 | 4/4 |
+| TD002 | 14/14 | 14/14 | 6/14 | 10/14 | 11/14 | 13/13 | 1/14 |
+| TD003 | 5/5 | 5/5 | 1/5 | 5/5 | 5/5 | 5/5 | 0/5 |
+| TD004 | 4/4 | 4/4 | 2/4 | 3/4 | 2/4 | 4/4 | 0/4 |
+| TD005 | - | 1/1 | 0/1 | 1/1 | 1/1 | 1/1 | 0/1 |
+| TD006 | 1/1 | 1/1 | 1/1 | 1/1 | 1/1 | 1/1 | 1/1 |
+| TD007 | 3/3 | 2/2 | 3/3 | 2/2 | 3/3 | 1/1 | 2/3 |
+| TD008 | 1/1 | - | - | - | - | - | 0/1 |
+
+### Benign
+
+9 snapshots (0 committed, 9 local), 77 tools, 0 unscannable, 0 findings for every rule.
+The 9 include the two own-server snapshots, which were also development negatives.
+
 ## Registry-tier typosquat flags: hand-review tally
 
 Measured before any rule change.

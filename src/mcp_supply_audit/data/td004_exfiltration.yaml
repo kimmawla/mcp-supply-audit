@@ -29,3 +29,28 @@ phrases:
   - to this url
   - to this endpoint
   - to the following endpoint
+
+# Send-to construction (docs/rules-tool-definitions.md, TD004 detail): a send verb, up to
+# three words, an object below, up to three words, "to", then any destination word.
+# Base forms only: "Posts the output to a channel" describes the tool, not an instruction.
+send_verbs:
+  - send
+  - forward
+  - post
+send_objects:
+  - conversation
+  - conversations
+  - chat
+  - chats
+  - history
+  - histories
+  - context
+  - contexts
+  - output
+  - outputs
+  - credentials
+  - credential
+  - token
+  - tokens
+  - system prompt
+  - system prompts
