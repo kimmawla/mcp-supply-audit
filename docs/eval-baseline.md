@@ -44,3 +44,15 @@ Detected/total per rule and mutation type, over counted patterns, artifacts excl
 
 0 snapshots (0 committed, 0 local), 0 tools, 0 unscannable, 0 findings for every rule.
 No benign false-positive rate exists yet.
+
+## Registry-tier typosquat flags: hand-review tally
+
+Measured before any rule change.
+
+- Pairs reviewed: 51 (rule TS006: 50, rule TS003: 1)
+- Plausible lookalike: 25
+- Legitimately distinct: 10
+- Unclear from names alone: 16
+- Precision range: 25/51 (about 49%) counting unclear as a miss, 25/35 (about 71%) excluding unclear, 41/51 (about 80%) counting unclear as a hit
+
+Limits: single reviewer, who is also the rule author. Judged from names only, with no publisher or adoption context. Registry tier only. Precision only, with no recall measurement. TS003 has one pair, so no rate is given for it.
