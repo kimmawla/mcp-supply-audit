@@ -17,7 +17,7 @@ For Claude Code, with [uv](https://docs.astral.sh/uv/):
 claude mcp add mcp-supply-audit -- uvx mcp-supply-audit
 ```
 
-To pin one version, use `uvx mcp-supply-audit@0.1.0` instead. `scan_mcp_config` flags the
+To pin one version, use `uvx mcp-supply-audit@0.1.1` instead. `scan_mcp_config` flags the
 unpinned form in the configs it scans (CF001).
 
 For Claude Desktop, add this to `mcpServers` in its config file:

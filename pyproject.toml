@@ -1,6 +1,6 @@
 [project]
 name = "mcp-supply-audit"
-version = "0.1.0"
+version = "0.1.1"
 description = "An MCP server that audits other MCP servers as software artifacts: registry listings, packages, configs, and tool definitions. Static checks only. It never runs the code it inspects."
 readme = "README.md"
 license = "MIT"
