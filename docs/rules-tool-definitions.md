@@ -176,6 +176,13 @@ Separate from the per-rule fixtures above. It measures the rules and is never us
   remaining miss on a pattern left out of the counts, shown under the unfetched list. One
   today: p14, TD002, cause (b).
 - Baseline: `docs/eval-baseline.md` records the counts measured before any rule change.
+- Held-out set: `tests/fixtures/heldout/` (`MANIFEST.yaml`, `positives/`, `benign/`), with the
+  same manifest schema as the eval corpus, scored by `uv run scripts/eval_heldout.py`. It prints
+  counts only: over the counted patterns, at least one expected rule fired, exact match and
+  extra rules fired (no `OUT_OF_SCOPE` or artifact cells); for benign, snapshots with any
+  finding and findings per rule. Each benign finding (file, rule, tool name, hidden and
+  non-ASCII characters escaped) goes to `local_fixtures/heldout-findings.tsv`, overwritten each
+  run, and only the row count is printed. Exit 1 when the corpus is missing.
 
 ## Known gaps
 
