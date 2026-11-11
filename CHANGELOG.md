@@ -2,7 +2,7 @@
 
 Findings are indicators for review, not verdicts. No findings is not proof of safety.
 
-## 0.1.1 - unreleased
+## 0.1.1 - 2026-11-10
 
 ### Changed
 - **Wider tool-definition coverage.** TD002 (instruction-like phrasing), TD003 (cross-references
